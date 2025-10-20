@@ -1,0 +1,6 @@
+user_id,item_id,interaction_type,timestamp
+U1001,Mexican,purchase,2025-01-15 10:30:00
+U1001,Italian,view,2025-01-15 10:35:00
+U1002,American,add_to_cart,2025-01-15 11:00:00
+U1002,Mexican,purchase,2025-01-15 11:05:00
+U1003,Italian,purchase,2025-01-15 12:00:00

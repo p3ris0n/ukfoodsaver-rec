@@ -442,51 +442,59 @@ async def get_statistics():
 
 @app.on_event("startup")
 async def startup_event():
-    """
-    Initialize model on startup.
-    In production, load from saved model or train on existing data.
-    """
+    """Initialize model on startup."""
     print("=" * 70)
     print("UKFoodSaver Recommendations API Starting...")
     print("=" * 70)
     
-    # Try to load existing data and train model
     try:
-        # Option 1: Load from CSV (if exists)
         import os
-        if os.path.exists('data/interactions.csv'):
-            print("Loading interaction data from CSV...")
-            interactions_df = load_interaction_data('data/interactions.csv')
-            recommender.train(interactions_df)
-            print("✓ Model trained on startup")
         
-        # Option 2: Load from your existing test data
-        elif os.path.exists('data/UKFS_testdata.csv'):
-            print("Loading test data (backward compatibility)...")
-            df = pd.read_csv('data/UKFS_testdata.csv')
+        # Check for data files
+        data_files = [
+            'data/interactions.csv',
+            'data/UKFS_testdata.csv',
+            './interactions.csv',
+            './UKFS_testdata.csv'
+        ]
+        
+        data_file = None
+        for file_path in data_files:
+            # Check file exists AND is not empty
+            if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                data_file = file_path
+                break
+        
+        if data_file:
+            print(f"Loading data from: {data_file}")
             
-            # Convert old rating format to interaction format
-            if 'rating' in df.columns and 'interaction_type' not in df.columns:
-                df['interaction_type'] = df['rating'].apply(
-                    lambda x: 'purchase' if x >= 1.5 else 'view'
-                )
-                df['timestamp'] = pd.Timestamp.now()
+            if 'UKFS_testdata' in data_file:
+                df = pd.read_csv(data_file)
+                if 'rating' in df.columns and 'interaction_type' not in df.columns:
+                    df['interaction_type'] = df['rating'].apply(
+                        lambda x: 'purchase' if x >= 1.5 else 'view'
+                    )
+                    df['timestamp'] = pd.Timestamp.now()
+                interactions_df = load_interaction_data(df=df)
+            else:
+                interactions_df = load_interaction_data(data_file)
             
-            interactions_df = load_interaction_data(df=df)
             recommender.train(interactions_df)
-            print("✓ Model trained on test data")
+            print(f"✓ Model trained on {len(interactions_df)} interactions")
         else:
-            print("⚠️  No data found. Use /train endpoint to initialize model.")
+            print("⚠️  No valid data files found. Model starting untrained.")
+            print("   Use POST /train to initialize the model")
             
     except Exception as e:
         print(f"⚠️  Startup training failed: {e}")
-        print("Use /train endpoint to initialize model manually.")
+        import traceback
+        traceback.print_exc()
+        print("   Model starting untrained.")
     
     print("=" * 70)
-    print("API Ready!")
-    print("Docs available at: http://localhost:8000/docs")
+    print("✓ API Ready!")
     print("=" * 70)
-
+    
 # ============================================================================
 # RUN SERVER
 # ============================================================================
