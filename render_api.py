@@ -252,6 +252,35 @@ async def debug_data_source():
         "data_file_found": os.path.exists('data/UKFS_testdata.csv')
     }
 
+@app.get("/debug/files")
+async def debug_files():
+    """Check what files exist in the deployment"""
+    import os
+    files = {}
+    
+    # Check common directories
+    paths_to_check = [
+        '.',
+        './data',
+        '/opt/render/project/src',
+        '/opt/render/project/src/data'
+    ]
+    
+    for path in paths_to_check:
+        try:
+            if os.path.exists(path):
+                files[path] = os.listdir(path)
+            else:
+                files[path] = "PATH_NOT_FOUND"
+        except Exception as e:
+            files[path] = f"ERROR: {e}"
+    
+    return {
+        "current_working_dir": os.getcwd(),
+        "files_in_directories": files,
+        "data_file_exists": os.path.exists('data/UKFS_testdata.csv')
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=10000)
