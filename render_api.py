@@ -306,21 +306,57 @@ async def debug_simple():
 @app.get("/debug/data-source")
 async def debug_data_source():
     """Check where the data is coming from"""
-    sample_data_users = ['U1001', 'U1002', 'U1003']
-    sample_data_items = ['item_1', 'item_2', 'item_3']
-    
-    # Check if we're using sample data
-    is_sample_data = (data['user_id'].isin(sample_data_users).any() and 
-                     data['item_id'].isin(sample_data_items).any())
-    
-    return {
-        "is_using_sample_data": is_sample_data,
-        "data_source": "sample_data" if is_sample_data else "real_data",
-        "total_rows": len(data),
-        "unique_items": list(data['item_id'].unique())[:10],  # Show first 10 items
-        "data_file_found": os.path.exists('data/UKFS_testdata.csv')
-    }
-
+    try:
+        print("🔍 Starting debug data source check...")
+        
+        # Check if data exists
+        if 'data' not in globals():
+            return {
+                "error": "Data variable not found in globals",
+                "status": "data_not_loaded"
+            }
+        
+        print(f"📊 Data shape: {data.shape if hasattr(data, 'shape') else 'no shape'}")
+        
+        # Check if data has the expected columns
+        if hasattr(data, 'columns'):
+            print(f"📋 Data columns: {list(data.columns)}")
+        else:
+            return {
+                "error": "Data doesn't have columns attribute",
+                "type": str(type(data))
+            }
+        
+        sample_data_users = ['U1001', 'U1002', 'U1003']
+        sample_data_items = ['item_1', 'item_2', 'item_3']
+        
+        # Check if we're using sample data
+        is_sample_data = (data['user_id'].isin(sample_data_users).any() and 
+                         data['item_id'].isin(sample_data_items).any())
+        
+        print(f"🎯 Is sample data: {is_sample_data}")
+        
+        result = {
+            "is_using_sample_data": is_sample_data,
+            "data_source": "sample_data" if is_sample_data else "real_data",
+            "total_rows": len(data),
+            "unique_items": list(data['item_id'].unique())[:10],
+            "data_file_found": os.path.exists('data/UKFS_testdata.csv')
+        }
+        
+        print(f"✅ Debug result: {result}")
+        return result
+        
+    except Exception as e:
+        error_msg = f"Error in debug_data_source: {str(e)}"
+        print(f"❌ {error_msg}")
+        return {
+            "error": error_msg,
+            "data_loaded": 'data' in globals(),
+            "data_type": str(type(data)) if 'data' in globals() else "not_defined",
+            "traceback": "See server logs for details"
+        }
+        
 @app.get("/debug/files")
 async def debug_files():
     """Check what files exist in the deployment"""
