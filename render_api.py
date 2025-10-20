@@ -1,4 +1,4 @@
-# render_api.py - FIXED VERSION
+# render_api.py - Fixed version for Render deployment
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -24,45 +24,25 @@ app.add_middleware(
 def load_data():
     """Load the UKFS test data"""
     try:
-        # Try different possible file paths
-        possible_paths = [
-            'data/UKFS_testdata.csv',
-            './data/UKFS_testdata.csv',
-            'UKFS_testdata.csv'
-        ]
-        
-        df = None
-        for path in possible_paths:
-            try:
-                df = pd.read_csv(path)
-                print(f"✓ Data loaded from {path}: {len(df)} interactions, {df['user_id'].nunique()} users, {df['item_id'].nunique()} items")
-                break
-            except FileNotFoundError:
-                continue
-        
-        if df is None:
-            raise FileNotFoundError("Could not find UKFS_testdata.csv in any expected location")
-            
+        df = pd.read_csv('data/UKFS_testdata.csv')
+        print(f"✓ Data loaded: {len(df)} interactions, {df['user_id'].nunique()} users, {df['item_id'].nunique()} items")
         return df
     except Exception as e:
-        print(f"❌ Error loading data: {e}")
-        # Don't return sample data - raise the error so we know it failed
-        raise e
+        print(f"⚠️ Error loading data: {e}")
+        # Return sample data if file not found
+        """return pd.DataFrame({
+            'user_id': ['U1001', 'U1002', 'U1003'],
+            'item_id': ['Mexican', 'American', 'Italian'],
+            'rating': [2, 1, 2]
+        })"""
+        raise Exception(f"Could not load data file: {e}")
 
-# Global data - will fail if data can't be loaded
-try:
-    data = load_data()
-    print("✓ Data successfully loaded!")
-    print(f"Sample items: {list(data['item_id'].unique())[:10]}")
-except Exception as e:
-    print(f"❌ CRITICAL: Could not load data: {e}")
-    # Exit if data can't be loaded
-    import sys
-    sys.exit(1)
+# Global data
+data = load_data()
 
 # Build popularity model
 def build_popularity_model(df):
-    """Build popularity-based recommendations using REAL cuisine names"""
+    """Build popularity-based recommendations"""
     item_popularity = df.groupby('item_id').agg({
         'rating': ['count', 'mean']
     }).reset_index()
@@ -87,14 +67,11 @@ async def root():
     return {
         "message": "UKFoodSaver Recommendations API",
         "status": "active",
-        "data_loaded": True,
-        "total_items": len(popularity_df),
         "endpoints": {
             "health": "/health",
             "available_food": "/available-food",
             "for_you": "/for-you/{user_id}",
-            "search": "/search?query=your_query",
-            "items": "/items"
+            "search": "/search?query=your_query"
         }
     }
 
@@ -102,11 +79,10 @@ async def root():
 async def health_check():
     return {
         "status": "healthy",
-        "data_loaded": True,
         "total_interactions": len(data),
         "total_users": data['user_id'].nunique(),
         "total_items": data['item_id'].nunique(),
-        "top_cuisines": list(popularity_df.head(5)['item_id'].tolist())
+        "model_ready": True
     }
 
 @app.get("/available-food")
@@ -255,21 +231,25 @@ async def get_items():
     items = data['item_id'].unique().tolist()
     return {
         "items": items,
-        "count": len(items),
-        "sample_items": items[:20]  # Show first 20 items
+        "count": len(items)
     }
 
-@app.get("/debug/data")
-async def debug_data():
-    """Debug endpoint to check what data is loaded"""
+@app.get("/debug/data-source")
+async def debug_data_source():
+    """Check where the data is coming from"""
+    sample_data_users = ['U1001', 'U1002', 'U1003']
+    sample_data_items = ['item_1', 'item_2', 'item_3']
+    
+    # Check if we're using sample data
+    is_sample_data = (data['user_id'].isin(sample_data_users).any() and 
+                     data['item_id'].isin(sample_data_items).any())
+    
     return {
-        "data_loaded": True,
+        "is_using_sample_data": is_sample_data,
+        "data_source": "sample_data" if is_sample_data else "real_data",
         "total_rows": len(data),
-        "columns": list(data.columns),
-        "sample_data": data.head(10).to_dict('records'),
-        "unique_items_count": data['item_id'].nunique(),
-        "unique_users_count": data['user_id'].nunique(),
-        "top_5_items": popularity_df.head(5)[['item_id', 'popularity_score']].to_dict('records')
+        "unique_items": list(data['item_id'].unique())[:10],  # Show first 10 items
+        "data_file_found": os.path.exists('data/UKFS_testdata.csv')
     }
 
 if __name__ == "__main__":
