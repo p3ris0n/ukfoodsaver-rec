@@ -23,18 +23,50 @@ app.add_middleware(
 # Load data on startup
 def load_data():
     """Load the UKFS test data"""
+    import os
+    
+    print("🔍 Checking file paths...")
+    
+    # Check what files exist
+    current_dir = os.getcwd()
+    print(f"Current directory: {current_dir}")
+    
     try:
-        df = pd.read_csv('data/UKFS_testdata.csv')
-        print(f"✓ Data loaded: {len(df)} interactions, {df['user_id'].nunique()} users, {df['item_id'].nunique()} items")
-        return df
+        # List files in current directory
+        files = os.listdir('.')
+        print(f"Files in root: {files}")
+        
+        # Check if data directory exists
+        if os.path.exists('data'):
+            data_files = os.listdir('data')
+            print(f"Files in data directory: {data_files}")
+        else:
+            print("❌ 'data' directory does not exist")
+            
+        # Try multiple possible paths
+        possible_paths = [
+            'data/UKFS_testdata.csv',
+            './data/UKFS_testdata.csv',
+            'UKFS_testdata.csv',
+            './UKFS_testdata.csv'
+        ]
+        
+        for path in possible_paths:
+            if os.path.exists(path):
+                print(f"✅ Found file at: {path}")
+                df = pd.read_csv(path)
+                print(f"✓ Data loaded from {path}: {len(df)} interactions, {df['user_id'].nunique()} users, {df['item_id'].nunique()} items")
+                print(f"Sample items: {list(df['item_id'].unique())[:5]}")
+                return df
+            else:
+                print(f"❌ File not found at: {path}")
+        
+        # If we get here, no file was found
+        raise FileNotFoundError("Could not find UKFS_testdata.csv in any location")
+        
     except Exception as e:
-        print(f"⚠️ Error loading data: {e}")
-        # Return sample data if file not found
-        """return pd.DataFrame({
-            'user_id': ['U1001', 'U1002', 'U1003'],
-            'item_id': ['Mexican', 'American', 'Italian'],
-            'rating': [2, 1, 2]
-        })"""
+        print(f"❌ Error loading data: {e}")
+        # Don't use sample data - fail hard so we know
         raise Exception(f"Could not load data file: {e}")
 
 # Global data
@@ -260,6 +292,15 @@ async def debug_files():
         "current_working_dir": os.getcwd(),
         "files_in_directories": files,
         "data_file_exists": os.path.exists('data/UKFS_testdata.csv')
+    }
+
+@app.get("/debug/simple")
+async def debug_simple():
+    """Simple debug endpoint without data dependency"""
+    return {
+        "status": "simple debug working",
+        "data_loaded": 'data' in globals(),
+        "timestamp": "2024-01-01T00:00:00Z"
     }
 
 @app.get("/debug/data-source")
