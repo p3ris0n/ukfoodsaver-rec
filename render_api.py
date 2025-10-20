@@ -234,6 +234,34 @@ async def get_items():
         "count": len(items)
     }
 
+@app.get("/test")
+async def test_endpoint():
+    return {"message": "API is working", "status": "ok"}
+
+@app.get("/debug/files")
+async def debug_files():
+    """Check what files exist in the deployment"""
+    import os
+    files = {}
+    
+    # Check common directories
+    paths_to_check = ['.', './data']
+    
+    for path in paths_to_check:
+        try:
+            if os.path.exists(path):
+                files[path] = os.listdir(path)
+            else:
+                files[path] = "PATH_NOT_FOUND"
+        except Exception as e:
+            files[path] = f"ERROR: {e}"
+    
+    return {
+        "current_working_dir": os.getcwd(),
+        "files_in_directories": files,
+        "data_file_exists": os.path.exists('data/UKFS_testdata.csv')
+    }
+
 @app.get("/debug/data-source")
 async def debug_data_source():
     """Check where the data is coming from"""
