@@ -1,4 +1,4 @@
-# render_api.py - Fixed version for Render deployment
+# render_api.py - FIXED VERSION
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -24,24 +24,45 @@ app.add_middleware(
 def load_data():
     """Load the UKFS test data"""
     try:
-        df = pd.read_csv('data/UKFS_testdata.csv')
-        print(f"✓ Data loaded: {len(df)} interactions, {df['user_id'].nunique()} users, {df['item_id'].nunique()} items")
+        # Try different possible file paths
+        possible_paths = [
+            'data/UKFS_testdata.csv',
+            './data/UKFS_testdata.csv',
+            'UKFS_testdata.csv'
+        ]
+        
+        df = None
+        for path in possible_paths:
+            try:
+                df = pd.read_csv(path)
+                print(f"✓ Data loaded from {path}: {len(df)} interactions, {df['user_id'].nunique()} users, {df['item_id'].nunique()} items")
+                break
+            except FileNotFoundError:
+                continue
+        
+        if df is None:
+            raise FileNotFoundError("Could not find UKFS_testdata.csv in any expected location")
+            
         return df
     except Exception as e:
-        print(f"⚠️ Error loading data: {e}")
-        # Return sample data if file not found
-        return pd.DataFrame({
-            'user_id': ['U1001', 'U1002', 'U1003'],
-            'item_id': ['Mexican', 'American', 'Italian'],
-            'rating': [2, 1, 2]
-        })
+        print(f"❌ Error loading data: {e}")
+        # Don't return sample data - raise the error so we know it failed
+        raise e
 
-# Global data
-data = load_data()
+# Global data - will fail if data can't be loaded
+try:
+    data = load_data()
+    print("✓ Data successfully loaded!")
+    print(f"Sample items: {list(data['item_id'].unique())[:10]}")
+except Exception as e:
+    print(f"❌ CRITICAL: Could not load data: {e}")
+    # Exit if data can't be loaded
+    import sys
+    sys.exit(1)
 
 # Build popularity model
 def build_popularity_model(df):
-    """Build popularity-based recommendations"""
+    """Build popularity-based recommendations using REAL cuisine names"""
     item_popularity = df.groupby('item_id').agg({
         'rating': ['count', 'mean']
     }).reset_index()
@@ -66,11 +87,14 @@ async def root():
     return {
         "message": "UKFoodSaver Recommendations API",
         "status": "active",
+        "data_loaded": True,
+        "total_items": len(popularity_df),
         "endpoints": {
             "health": "/health",
             "available_food": "/available-food",
             "for_you": "/for-you/{user_id}",
-            "search": "/search?query=your_query"
+            "search": "/search?query=your_query",
+            "items": "/items"
         }
     }
 
@@ -78,10 +102,11 @@ async def root():
 async def health_check():
     return {
         "status": "healthy",
+        "data_loaded": True,
         "total_interactions": len(data),
         "total_users": data['user_id'].nunique(),
         "total_items": data['item_id'].nunique(),
-        "model_ready": True
+        "top_cuisines": list(popularity_df.head(5)['item_id'].tolist())
     }
 
 @app.get("/available-food")
@@ -230,7 +255,21 @@ async def get_items():
     items = data['item_id'].unique().tolist()
     return {
         "items": items,
-        "count": len(items)
+        "count": len(items),
+        "sample_items": items[:20]  # Show first 20 items
+    }
+
+@app.get("/debug/data")
+async def debug_data():
+    """Debug endpoint to check what data is loaded"""
+    return {
+        "data_loaded": True,
+        "total_rows": len(data),
+        "columns": list(data.columns),
+        "sample_data": data.head(10).to_dict('records'),
+        "unique_items_count": data['item_id'].nunique(),
+        "unique_users_count": data['user_id'].nunique(),
+        "top_5_items": popularity_df.head(5)[['item_id', 'popularity_score']].to_dict('records')
     }
 
 if __name__ == "__main__":
