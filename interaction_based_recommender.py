@@ -45,7 +45,7 @@ def load_interaction_data(csv_path=None, df=None):
         df['implicit_rating'] = df['interaction_type'].map(INTERACTION_WEIGHTS)
         
         # Handle missing interaction types
-        df['implicit_rating'].fillna(INTERACTION_WEIGHTS['view'], inplace=True)
+        df['implicit_rating'] = df['implicit_rating'].fillna(INTERACTION_WEIGHTS['view'])
         
     elif 'rating' in df.columns:
         # OLD FORMAT: Use ratings directly (backward compatibility)
