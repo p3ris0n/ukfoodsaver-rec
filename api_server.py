@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List, Literal
 from datetime import datetime
+from contextlib import asynccontextmanager
 import pandas as pd
 import uvicorn
 
@@ -19,13 +20,78 @@ from interaction_based_recommender import (
 )
 
 # ============================================================================
+# LIFESPAN EVENT HANDLER
+# ============================================================================
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize model on startup."""
+    print("=" * 70)
+    print("UKFoodSaver Recommendations API Starting...")
+    print("=" * 70)
+    
+    try:
+        import os
+        
+        # Check for data files
+        data_files = [
+            'data/interactions.csv',
+            'data/UKFS_testdata.csv',
+            './interactions.csv',
+            './UKFS_testdata.csv'
+        ]
+        
+        data_file = None
+        for file_path in data_files:
+            # Check file exists AND is not empty
+            if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                data_file = file_path
+                break
+        
+        if data_file:
+            print(f"Loading data from: {data_file}")
+            
+            if 'UKFS_testdata' in data_file:
+                df = pd.read_csv(data_file)
+                if 'rating' in df.columns and 'interaction_type' not in df.columns:
+                    df['interaction_type'] = df['rating'].apply(
+                        lambda x: 'purchase' if x >= 1.5 else 'view'
+                    )
+                    df['timestamp'] = pd.Timestamp.now()
+                interactions_df = load_interaction_data(df=df)
+            else:
+                interactions_df = load_interaction_data(data_file)
+            
+            recommender.train(interactions_df)
+            print(f"✓ Model trained on {len(interactions_df)} interactions")
+        else:
+            print("⚠️  No valid data files found. Model starting untrained.")
+            print("   Use POST /train to initialize the model")
+            
+    except Exception as e:
+        print(f"⚠️  Startup training failed: {e}")
+        import traceback
+        traceback.print_exc()
+        print("   Model starting untrained.")
+    
+    print("=" * 70)
+    print("✓ API Ready!")
+    print("=" * 70)
+    
+    yield
+    
+    # Shutdown code (if needed in the future)
+    pass
+
+# ============================================================================
 # INITIALIZE FASTAPI APP
 # ============================================================================
 
 app = FastAPI(
     title="UKFoodSaver Recommendations API",
     description="Recommendation system for food marketplace platform",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Add CORS middleware for frontend integration
@@ -71,6 +137,8 @@ class ComplementaryResponse(BaseModel):
     count: int
 
 class HealthResponse(BaseModel):
+    model_config = {'protected_namespaces': ()}
+    
     status: str
     model_trained: bool
     last_train_time: Optional[str]
@@ -436,65 +504,6 @@ async def get_statistics():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {str(e)}")
 
-# ============================================================================
-# STARTUP EVENT
-# ============================================================================
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize model on startup."""
-    print("=" * 70)
-    print("UKFoodSaver Recommendations API Starting...")
-    print("=" * 70)
-    
-    try:
-        import os
-        
-        # Check for data files
-        data_files = [
-            'data/interactions.csv',
-            'data/UKFS_testdata.csv',
-            './interactions.csv',
-            './UKFS_testdata.csv'
-        ]
-        
-        data_file = None
-        for file_path in data_files:
-            # Check file exists AND is not empty
-            if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-                data_file = file_path
-                break
-        
-        if data_file:
-            print(f"Loading data from: {data_file}")
-            
-            if 'UKFS_testdata' in data_file:
-                df = pd.read_csv(data_file)
-                if 'rating' in df.columns and 'interaction_type' not in df.columns:
-                    df['interaction_type'] = df['rating'].apply(
-                        lambda x: 'purchase' if x >= 1.5 else 'view'
-                    )
-                    df['timestamp'] = pd.Timestamp.now()
-                interactions_df = load_interaction_data(df=df)
-            else:
-                interactions_df = load_interaction_data(data_file)
-            
-            recommender.train(interactions_df)
-            print(f"✓ Model trained on {len(interactions_df)} interactions")
-        else:
-            print("⚠️  No valid data files found. Model starting untrained.")
-            print("   Use POST /train to initialize the model")
-            
-    except Exception as e:
-        print(f"⚠️  Startup training failed: {e}")
-        import traceback
-        traceback.print_exc()
-        print("   Model starting untrained.")
-    
-    print("=" * 70)
-    print("✓ API Ready!")
-    print("=" * 70)
-    
 # ============================================================================
 # RUN SERVER
 # ============================================================================
