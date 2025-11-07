@@ -1,4 +1,4 @@
-user_id,rating,restaurant_name,city,state,zipcode,country,interaction_type,timestamp,item_id
+user_id,rating,store_id,city,state,postal_code,country,interaction_type,timestamp,item_id
 U1001,2,Burger King,Manitowoc,WI,54220,US,purchase,1/15/2025 10:30,Spanish
 U1002,2,Petro-Canada,Airdrie,AB,T4A,CA,view,1/15/2025 10:35,Italian
 U1003,2,Boba Bae,Ashwaubenon,WI,54304,US,add_to_cart,1/15/2025 11:00,Latin_American

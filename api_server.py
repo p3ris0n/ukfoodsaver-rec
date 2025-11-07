@@ -19,9 +19,9 @@ from interaction_based_recommender import (
     INTERACTION_WEIGHTS
 )
 
-# ============================================================================
+ 
 # LIFESPAN EVENT HANDLER
-# ============================================================================
+ 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -83,9 +83,9 @@ async def lifespan(app: FastAPI):
     # Shutdown code (if needed in the future)
     pass
 
-# ============================================================================
+ 
 # INITIALIZE FASTAPI APP
-# ============================================================================
+ 
 
 app = FastAPI(
     title="UKFoodSaver Recommendations API",
@@ -106,9 +106,9 @@ app.add_middleware(
 # Global recommender instance
 recommender = UKFoodSaverRecommender()
 
-# ============================================================================
+ 
 # PYDANTIC MODELS (Request/Response schemas)
-# ============================================================================
+ 
 
 class InteractionLog(BaseModel):
     user_id: str
@@ -146,9 +146,9 @@ class HealthResponse(BaseModel):
     total_users: int
     total_items: int
 
-# ============================================================================
+ 
 # API ENDPOINTS
-# ============================================================================
+ 
 
 @app.get("/", tags=["General"])
 async def root():

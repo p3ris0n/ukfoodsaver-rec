@@ -11,9 +11,9 @@ from scipy.sparse import csr_matrix
 from collections import defaultdict
 import json
 
-# ============================================================================
+ 
 # INTERACTION WEIGHTS CONFIGURATION
-# ============================================================================
+ 
 
 INTERACTION_WEIGHTS = {
     'view': 1.0,           # User viewed the item
@@ -24,10 +24,7 @@ INTERACTION_WEIGHTS = {
 # For cold start - popularity calculation
 POPULARITY_DECAY_DAYS = 2  # Items lose popularity after 2 days (food expiration)
 
-
-# ============================================================================
 # DATA PREPROCESSING: Convert Interactions to Implicit Ratings
-# ============================================================================
 
 def load_interaction_data(csv_path=None, df=None):
     """
@@ -90,10 +87,7 @@ def create_interaction_matrix(interactions_df):
     
     return interaction_matrix, user_to_idx, item_to_idx
 
-
-# ============================================================================
 # POSTAL CODE & KEYWORD FILTERING
-# ============================================================================
 
 class ItemMetadata:
     """
@@ -144,10 +138,7 @@ class ItemMetadata:
             if self.items.get(item_id, {}).get('store_id') != exclude_store_id
         ]
 
-
-# ============================================================================
 # POPULARITY BASELINE (For Cold Start)
-# ============================================================================
 
 def build_popularity_baseline(interactions_df, item_metadata=None, 
                               recency_weight=0.3):
@@ -218,10 +209,7 @@ def get_available_food_recommendations(popularity_df, item_metadata,
     
     return filtered_popularity.head(n)[['item_id', 'popularity_score']].values.tolist()
 
-
-# ============================================================================
 # COLLABORATIVE FILTERING (For "For You" Page)
-# ============================================================================
 
 def train_interaction_model(interactions_df):
     """
@@ -355,10 +343,7 @@ def get_for_you_recommendations(user_id, trainset, model, interactions_df,
     
     return filtered_predictions[:n]
 
-
-# ============================================================================
 # COMPLEMENTARY ITEMS (Butter → Bread logic)
-# ============================================================================
 
 def find_complementary_items(item_id, interactions_df, item_metadata, 
                             trainset, n=5):
@@ -400,9 +385,9 @@ def find_complementary_items(item_id, interactions_df, item_metadata,
     return complementary.head(n)[['item_id', 'co_occurrence_count']].values.tolist()
 
 
-# ============================================================================
+ 
 # FASTAPI INTEGRATION
-# ============================================================================
+ 
 
 class UKFoodSaverRecommender:
     """
@@ -491,9 +476,7 @@ class UKFoodSaverRecommender:
             self.train(self.interactions_df)
 
 
-# ============================================================================
-# EXAMPLE USAGE
-# ============================================================================
+# EXAMPLE USAGE 
 
 if __name__ == "__main__":
     print("UKFoodSaver Interaction-Based Recommender System")
