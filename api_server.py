@@ -60,7 +60,7 @@ async def lifespan(app: FastAPI):
                     df['timestamp'] = pd.Timestamp.now()
                 interactions_df = load_interaction_data(df=df)
             else:
-                interactions_df = load_interaction_data(data_file)
+                interactions_df = load_interaction_data("data/UKFS_testdata.csv")
             
             recommender.train(interactions_df)
             print(f"✓ Model trained on {len(interactions_df)} interactions")
@@ -504,15 +504,13 @@ async def get_statistics():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {str(e)}")
 
-# ============================================================================
-# RUN SERVER
-# ============================================================================
+# run server.
 
 if __name__ == "__main__":
     # For local development
     uvicorn.run(
         "api_server:app",
-        host="0.0.0.0",
+        host="localhost",
         port=8000,
-        reload=True  # Auto-reload on code changes
+        reload=True  # auto-reload on code changes
     )

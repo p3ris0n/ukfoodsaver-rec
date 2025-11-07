@@ -37,7 +37,7 @@ def load_interaction_data(csv_path=None, df=None):
     If still using old format (user_id, item_id, rating), it will handle it.
     """
     if df is None:
-        df = pd.read_csv(csv_path)
+        df = pd.read_csv("data/UKFS_testdata.csv")
     
     # Check if we're using new interaction format or old rating format
     if 'interaction_type' in df.columns:
