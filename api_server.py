@@ -281,7 +281,7 @@ async def get_available_food(
 async def get_for_you(
     user_id: str,
     postal_code: Optional[str] = Query(None, description="Filter by postal code"),
-    keyword: Optional[str] = Query(None, description="Search by keyword"),
+    keyword: Optional[str] = Query(None, description=" by keyword"),
     n: int = Query(10, ge=1, le=50, description="Number of recommendations")
 ):
     """
@@ -400,24 +400,52 @@ async def search_items(
 ):
     """
     Unified search endpoint supporting both keyword and postal code search.
-    
-    - **keyword**: Searches item names/descriptions (e.g., "meat pie", "rice")
-    - **postal_code**: Searches by location (e.g., "AB1 2CD")
-    - **auto**: Automatically detects search type based on query format
     """
+    # Check if model is trained
+    if recommender.model is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Model not trained. Call /train endpoint first."
+        )
+
     try:
+        # Validate query
+        if not query or len(query.strip()) == 0:
+            raise HTTPException(
+                status_code=400,
+                detail="Search query cannot be empty"
+            )
+
         # Auto-detect search type
         if search_type == 'auto':
             if len(query) <= 8 and any(c.isdigit() for c in query):
                 search_type = 'postal_code'
+                print(f"Auto-detected search type: postal_code for query '{query}'")
             else:
                 search_type = 'keyword'
-        
-        # Route to appropriate search
+                print(f"Auto-detected search type: keyword for query '{query}'")
+
+        # Route to appropriate search with proper parameter
+        result = None
         if search_type == 'postal_code':
-            return await get_available_food(postal_code=query, n=n)
+            result = await get_recommendations(
+                user_id=None,
+                postal_code=query.strip(),
+                keyword=None,
+                n=n
+            )
         else:
-            return await get_available_food(keyword=query, n=n)
+            result = await get_recommendations(
+                user_id=None,
+                postal_code=None,
+                keyword=query.strip(),
+                n=n
+            )
+
+        # Log search results
+        print(f"Search results for '{query}' ({search_type}): {len(result.recommendations)} items found")
+        return result
+
     except Exception as e:
         import traceback
         print(f"❌ Search error for query '{query}': {e}")

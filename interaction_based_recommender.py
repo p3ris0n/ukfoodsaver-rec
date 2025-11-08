@@ -143,12 +143,39 @@ class ItemMetadata:
             return item_ids
         
         keyword_lower = keyword.lower()
-        return [
-            item_id for item_id in item_ids
-            if (keyword_lower in str(item_id).lower() or any (keyword_lower in str(value).lower()
-                for value in self.items.get(item_id, {}).values()))
-        ]
-    
+        results = []
+
+        for item_id in item_ids:
+            # get item metadata
+            item_data = self.items.get(item_id, {})
+
+            # search in item_id
+            if keyword_lower in str(item_id).lower():
+                results.append(item_id)
+                continue
+
+            # search in store_id/restaurant_name
+            if keyword_lower in str(item_data.get('store_id', '')).lower():
+                results.append(item_id)
+                continue
+            
+            # search in keywords if peresent
+            if any(keyword_lower in kw.lower() for kw in item_data.get('keywords', [])):
+                results.append(item_id)
+                continue
+
+            # search in other metadata fields
+            metadata_values = [
+                str(item_data.get('city', '')),
+                str(item_data.get('state', '')),
+                str(item_data.get('country', ''))
+            ]
+
+            if any(keyword_lower in value.lower() for value in metadata_values if value): 
+                results.append(item_id)
+
+        return results
+       
     def filter_by_freshness(self, item_ids, max_age_hours=24):
         """Filter items that are still fresh (not expired)."""
         cutoff = datetime.now() - timedelta(hours=max_age_hours)
