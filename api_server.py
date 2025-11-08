@@ -1,6 +1,6 @@
 """
 FastAPI Server for UKFoodSaver Recommendation System
-Deploy this on Render and share endpoints with Bro Johnson
+FIXED VERSION - Removes convert_old_data_to_interactions error
 """
 
 from fastapi import FastAPI, HTTPException, Query
@@ -11,6 +11,7 @@ from datetime import datetime
 from contextlib import asynccontextmanager
 import pandas as pd
 import uvicorn
+import os
 
 # Import your recommender system
 from interaction_based_recommender import (
@@ -19,9 +20,9 @@ from interaction_based_recommender import (
     INTERACTION_WEIGHTS
 )
 
- 
+# ============================================================================
 # LIFESPAN EVENT HANDLER
- 
+# ============================================================================
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,41 +32,44 @@ async def lifespan(app: FastAPI):
     print("=" * 70)
     
     try:
-        import os
-        
         # Check for data files
         data_files = [
-            'data/interactions.csv',
             'data/UKFS_testdata.csv',
-            './interactions.csv',
-            './UKFS_testdata.csv'
+            './UKFS_testdata.csv',
+            'data/interactions.csv',
+            './interactions.csv'
         ]
         
         data_file = None
         for file_path in data_files:
-            # Check file exists AND is not empty
             if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
                 data_file = file_path
+                print(f"✓ Found data file: {file_path}")
                 break
         
         if data_file:
-            print(f"Loading data from: {data_file}")
+            print(f"📂 Loading data from: {data_file}")
             
-            if 'UKFS_testdata' in data_file:
-                df = pd.read_csv(data_file)
-                if 'rating' in df.columns and 'interaction_type' not in df.columns:
-                    df['interaction_type'] = df['rating'].apply(
-                        lambda x: 'purchase' if x >= 1.5 else 'view'
-                    )
-                    df['timestamp'] = pd.Timestamp.now()
-                interactions_df = load_interaction_data(df=df)
-            else:
-                interactions_df = load_interaction_data("data/UKFS_testdata.csv")
+            # Load the CSV file
+            raw_df = pd.read_csv(data_file)
             
-            recommender.train(interactions_df)
-            print(f"✓ Model trained on {len(interactions_df)} interactions")
+            # The load_interaction_data function handles both old and new formats
+            # It returns (interactions_df, raw_df) tuple
+            interactions_df, raw_data = load_interaction_data(df=raw_df)
+            
+            # Train with metadata
+            recommender.train(interactions_df, raw_data)
+            
+            print(f"✓ Model trained successfully")
+            print(f"  📊 Interactions: {len(interactions_df)}")
+            print(f"  👥 Users: {interactions_df['user_id'].nunique()}")
+            print(f"  🍔 Items: {interactions_df['item_id'].nunique()}")
+            print(f"  📍 Items with metadata: {len(recommender.item_metadata.items)}")
         else:
             print("⚠️  No valid data files found. Model starting untrained.")
+            print("   Checked locations:")
+            for path in data_files:
+                print(f"     - {path}")
             print("   Use POST /train to initialize the model")
             
     except Exception as e:
@@ -80,12 +84,12 @@ async def lifespan(app: FastAPI):
     
     yield
     
-    # Shutdown code (if needed in the future)
+    # Shutdown code (if needed)
     pass
 
- 
+# ============================================================================
 # INITIALIZE FASTAPI APP
- 
+# ============================================================================
 
 app = FastAPI(
     title="UKFoodSaver Recommendations API",
@@ -106,9 +110,9 @@ app.add_middleware(
 # Global recommender instance
 recommender = UKFoodSaverRecommender()
 
- 
+# ============================================================================
 # PYDANTIC MODELS (Request/Response schemas)
- 
+# ============================================================================
 
 class InteractionLog(BaseModel):
     user_id: str
@@ -146,9 +150,9 @@ class HealthResponse(BaseModel):
     total_users: int
     total_items: int
 
- 
+# ============================================================================
 # API ENDPOINTS
- 
+# ============================================================================
 
 @app.get("/", tags=["General"])
 async def root():
@@ -183,19 +187,24 @@ async def health_check():
     )
 
 @app.post("/train", tags=["Admin"])
-async def train_model(csv_path: str = "data/interactions.csv"):
+async def train_model(csv_path: str = "data/UKFS_testdata.csv"):
     """
     Train/retrain the recommendation model.
     In production, this would be called periodically or triggered by data updates.
     """
     try:
-        interactions_df = load_interaction_data(csv_path)
-        recommender.train(interactions_df)
+        if not os.path.exists(csv_path):
+            raise HTTPException(status_code=404, detail=f"File not found: {csv_path}")
+        
+        raw_df = pd.read_csv(csv_path)
+        interactions_df, raw_data = load_interaction_data(df=raw_df)
+        recommender.train(interactions_df, raw_data)
         
         return {
             "status": "success",
             "message": "Model trained successfully",
             "interactions_count": len(interactions_df),
+            "items_with_metadata": len(recommender.item_metadata.items),
             "train_time": recommender.last_train_time.isoformat()
         }
     except Exception as e:
@@ -233,19 +242,18 @@ async def get_recommendations(
         # Format recommendations for response
         formatted_recs = [
             {
-                "item_id": item_id,
-                "score": float(score),
+                **rec,  # Includes all fields (item_id, score, store_id, postal_code, etc.)
                 "rank": idx + 1
             }
-            for idx, (item_id, score) in enumerate(result['recommendations'])
+            for idx, rec in enumerate(result['recommendations'])
         ]
         
         return RecommendationResponse(
             type=result['type'],
             user_id=result.get('user_id'),
             recommendations=formatted_recs,
-            postal_code=postal_code,
-            keyword=keyword,
+            postal_code=str(postal_code) if postal_code is not None else None,
+            keyword=str(keyword) if keyword is not None else None,
             count=len(formatted_recs)
         )
         
@@ -307,11 +315,10 @@ async def get_complementary_items(
         
         formatted = [
             {
-                "item_id": item_id,
-                "co_occurrence_count": int(count),
+                **item,  # Includes metadata
                 "rank": idx + 1
             }
-            for idx, (item_id, count) in enumerate(complementary)
+            for idx, item in enumerate(complementary)
         ]
         
         return ComplementaryResponse(
@@ -398,19 +405,24 @@ async def search_items(
     - **postal_code**: Searches by location (e.g., "AB1 2CD")
     - **auto**: Automatically detects search type based on query format
     """
-    # Auto-detect search type
-    if search_type == 'auto':
-        # Simple heuristic: if query looks like postal code format, treat as postal code
-        if len(query) <= 8 and any(c.isdigit() for c in query):
-            search_type = 'postal_code'
+    try:
+        # Auto-detect search type
+        if search_type == 'auto':
+            if len(query) <= 8 and any(c.isdigit() for c in query):
+                search_type = 'postal_code'
+            else:
+                search_type = 'keyword'
+        
+        # Route to appropriate search
+        if search_type == 'postal_code':
+            return await get_available_food(postal_code=query, n=n)
         else:
-            search_type = 'keyword'
-    
-    # Route to appropriate search
-    if search_type == 'postal_code':
-        return await get_available_food(postal_code=query, n=n)
-    else:
-        return await get_available_food(keyword=query, n=n)
+            return await get_available_food(keyword=query, n=n)
+    except Exception as e:
+        import traceback
+        print(f"❌ Search error for query '{query}': {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
 
 @app.get("/user/{user_id}/history", tags=["User"])
 async def get_user_history(
@@ -486,13 +498,24 @@ async def get_statistics():
         else:
             interaction_breakdown = {}
         
-        # Top items
-        top_items = recommender.popularity_df.head(10)[['item_id', 'popularity_score']].to_dict('records')
+        # Top items with metadata
+        top_items = []
+        for _, row in recommender.popularity_df.head(10).iterrows():
+            item_id = row['item_id']
+            metadata = recommender.item_metadata.get_item_info(item_id)
+            top_items.append({
+                "item_id": item_id,
+                "popularity_score": float(row['popularity_score']),
+                "store_id": metadata.get('store_id', ''),
+                "city": metadata.get('city', ''),
+                "state": metadata.get('state', '')
+            })
         
         return {
             "total_interactions": total_interactions,
             "total_users": total_users,
             "total_items": total_items,
+            "items_with_metadata": len(recommender.item_metadata.items),
             "avg_interactions_per_user": avg_interactions_per_user,
             "avg_interactions_per_item": avg_interactions_per_item,
             "interaction_breakdown": interaction_breakdown,
@@ -504,13 +527,11 @@ async def get_statistics():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {str(e)}")
 
-# run server.
-
+# Run server
 if __name__ == "__main__":
-    # For local development
     uvicorn.run(
         "api_server:app",
         host="localhost",
         port=8000,
-        reload=True  # auto-reload on code changes
+        reload=True
     )

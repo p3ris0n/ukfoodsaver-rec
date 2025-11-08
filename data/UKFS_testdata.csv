@@ -1,141 +1,313 @@
 user_id,rating,store_id,city,state,postal_code,country,interaction_type,timestamp,item_id
-U1001,2,Burger King,Manitowoc,WI,54220,US,purchase,1/15/2025 10:30,Spanish
-U1002,2,Petro-Canada,Airdrie,AB,T4A,CA,view,1/15/2025 10:35,Italian
-U1003,2,Boba Bae,Ashwaubenon,WI,54304,US,add_to_cart,1/15/2025 11:00,Latin_American
-U1004,2,1001 Nights Shawarma,Kitchener,ON,N2C,CA,purchase,1/15/2025 11:05,Mexican
-U1004,1,Chirpyhut Fried Chicken (JlgJ),Richmond,BC,V6X 2B8,CA,purchase,1/15/2025 12:00,Fast_Food
-U1004,0,7 West Cafe,Toronto,ON,M4Y 1R4,CA,purchase,1/16/2025 12:00,Burgers
-U1004,1,Petro-Canada,Edmonton,AB,T6X,CA,view,1/17/2025 12:00,Dessert-Ice_Cream
-U1004,0,El Valle Verde,Cincinnati,OH,45205,US,add_to_cart,1/18/2025 12:00,Hot_Dogs
-U1004,1,Rock Salad,Dubuque,IA,52001,US,purchase,1/19/2025 12:00,Steaks
-U1004,2,Etoile Mirabel,Mirabel,QC,J7J,CA,purchase,1/20/2025 12:00,Asian
-U1004,1,Petro-Canada,Burlington,ON,L7L,CA,purchase,1/21/2025 12:00,International
-U1004,2,J. Alexander's : Jacksonville,Jacksonville,FL,32246,US,view,1/22/2025 12:00,Mongolian
-U1005,0,Petro-Canada,Burlington,ON,L7L,CA,add_to_cart,1/23/2025 12:00,Vegetarian
-U1006,0,Petro-Canada,Montréal,QC,H3S,CA,purchase,1/24/2025 12:00,Brazilian
-U1007,0,A&W,Red Deer,AB,T4R,CA,purchase,1/25/2025 12:00,Cafe-Coffee_Shop
-U1008,2,A&W,Laval,QC,H7V 2W6,CA,purchase,1/26/2025 12:00,Cafeteria
-U1008,0,Petro-Canada,Regina,SK,S4N,CA,view,1/27/2025 12:00,Contemporary
-U1008,2,Juanys Taqueria,San Antonio,TX,78211,US,add_to_cart,1/28/2025 12:00,Deli-Sandwiches
-U1008,2,Casa Mexicana Restaurant Inc,Tampa,FL,33619,US,purchase,1/29/2025 12:00,Diner
-U1008,2,Mrbeast Burger,Austin,TX,78759,US,purchase,1/30/2025 12:00,Japanese
-U1008,2,Viva Mexico 406,Palisades Park,NJ,7650,US,purchase,1/31/2025 12:00,Sushi
-U1008,0,Little Caesars,Texarkana,TX,75503,US,view,2/1/2025 12:00,Seafood
-U1008,2,Beef 'o' Brady's - Kingsport Tn,Kingsport,TN,37660,US,add_to_cart,2/2/2025 12:00,Chinese
-U1008,2,More Taters Please,Windsor,ON,N8W,CA,purchase,2/3/2025 12:00,Bar
-U1008,2,Franny's Family Restaurant & Pancake House,Stevens Point,WI,54482,US,purchase,2/4/2025 12:00,Bar_Pub_Brewery
-U1009,2,Famous Greek Salads,Clearwater,FL,33761,US,purchase,2/5/2025 12:00,Pizzeria
-U1009,2,Viva Mexico 406,Palisades Park,NJ,7650,US,view,2/6/2025 12:00,Mediterranean
-U1009,2,New York Pizza Factory,Fairfax,VA,22030,US,add_to_cart,2/7/2025 12:00,American
-U1009,2,McDonald's,Meraux,LA,70075,US,purchase,2/8/2025 12:00,Family
-U1009,1,Mcdonald's®,Hammond,IN,46323,US,purchase,2/9/2025 12:00,Caribbean
-U1009,1,Mr. Fish & Chicken,Detroit,MI,48205,US,purchase,2/10/2025 12:00,African
-U1009,0,7 West Cafe,Toronto,ON,M4Y 1R4,CA,view,2/11/2025 12:00,Breakfast-Brunch
-U1010,0,Zubu Ramen Bar,Burnaby,BC,V5H 4J5,CA,add_to_cart,2/12/2025 12:00, Burgers
-U1011,0,Enjoy Cafe 1+1,Richmond,BC,V6X,CA,purchase,2/13/2025 12:00, Coffee/Tea
-U1012,1,European Bakery & Deli,Calgary,AB,T2S 0A9,CA,purchase,2/14/2025 12:00, Bubble Tea
-U1013,0,Dirty Burger,New York,NY,10011,US,purchase,2/15/2025 12:00, Local
-U1014,0,902 Restaurant & Catering,Halifax,NS,B3J,CA,view,2/16/2025 12:00, American
-U1014,0,Petro-Canada,Montréal,QC,H4B,CA,add_to_cart,2/17/2025 12:00, Alcohol
-U1015,0,Soup Kettle,Pittsburgh,PA,15217,US,purchase,2/18/2025 12:00, Kids Menu
-U1016,0,A&w,Chilliwack,BC,V2R 3N4,CA,purchase,2/19/2025 12:00, Dessert
-U1016,0,El Pastaman,Montréal,QC,H2X,CA,purchase,2/20/2025 12:00, Bon
-U1016,0,Vegetable Garden,Silver Spring,MD,20906,US,view,2/21/2025 12:00, Convenience
-U1016,0,Enjoy Cafe 1+1,Richmond,BC,V6X,CA,add_to_cart,2/22/2025 12:00, Desserts
-U1016,2,Petro-Canada,Coquitlam,BC,V3K,CA,purchase,2/23/2025 12:00, Café/Thé
-U1016,2,Erito Sushi,Victoria,BC,V8Z 0B9,CA,purchase,2/24/2025 12:00, Grocery
-U1016,1,First Watch,Tampa,FL,33609,US,purchase,2/25/2025 12:00, New Mexican
-U1016,2,Ruby Thai Kitchen,Happy Valley,OR,97086,US,purchase,2/26/2025 12:00, Diner
-U1016,0,Montana's,Orillia,ON,L3V 8A2,CA,view,2/27/2025 12:00, Chicken Wings
-U1016,2,Portland Fried Chicken Cult,Portland,OR,97209,US,add_to_cart,2/28/2025 12:00, Beef & Pork
-U1016,2,Mak's Pasta & Salad,Nashville,TN,37219,US,purchase,3/1/2025 12:00, Fast Food
-U1016,2,168 Sushi Buffet,London,ON,N6H 1T9,CA,purchase,3/2/2025 12:00, Américain
-U1016,2,Mercy's Bakery - Lansdale,Lansdale,PA,19446,US,purchase,3/3/2025 12:00, Breakfast
-U1016,2,Stoby's Russellville - Russellville,Russellville,AR,72801,US,purchase,3/4/2025 12:00, Mediterranean
-U1017,1,McDonald's,Woodruff,SC,29388,US,view,3/1/2025 12:00, Dinner
-U1018,2,A&W,Red Deer,AB,T4R 1H1,CA,add_to_cart,3/2/2025 12:00, Burger
-U1019,1,Dunkin',Trooper,PA,19403,US,purchase,3/3/2025 12:00, Fish And Chips
-U1020,2,280 Marathon,Opelika,AL,36804,US,purchase,3/4/2025 12:00, Chicken
-U1021,2,McDonald's,Philadelphia,PA,19122,US,purchase,3/5/2025 12:00, Bakery
-U1021,2,Rotunda Cafe,Madison,WI,53704,US,purchase,3/6/2025 12:00, Greek
-U1021,2,Leo's Pizza Italian Restaraunt,Washington,NJ,7882,US,view,3/7/2025 12:00, Deli
-U1021,0,Ancora - Downtown,Madison,WI,53703,US,add_to_cart,3/8/2025 12:00, Bistro
-U1022,2,Enjoy Cafe 1+1,Richmond,BC,V6X,CA,purchase,3/9/2025 12:00, Chinese
-U1023,1,Lou's Bar & Grill,Phoenix,AZ,85008,US,purchase,3/10/2025 12:00, Fait-Maison
-U1024,2,Jason's Deli,Melbourne,FL,32904,US,purchase,3/11/2025 12:00, Breakfast And Brunch
-U1025,2,3 Coins Open Kitchen,Richmond Hill,ON,L4C,CA,purchase,3/12/2025 12:00, Asian
-U1026,2,Starbucks,Windsor,ON,N8T 1E6,CA,view,3/13/2025 12:00, Comfort Food
-U1027,2,Taco Bell,La Crosse,WI,54601,US,add_to_cart,3/14/2025 12:00, Asiatique
-U1028,1,Atlas Cafe,New York,NY,10003,US,purchase,3/15/2025 12:00, American (Traditional)
-U1029,2,Sonic,Denton,TX,76205,US,purchase,3/16/2025 12:00,
-U1030,1,Starbucks,St. Catharines,ON,L2N 4H2,CA,purchase,3/17/2025 12:00, Grandma Pizza
-U1031,1,MomO's Cafe,Newport News,VA,23606,US,purchase,3/18/2025 12:00, Family Meals
-U1032,2,Petro-Canada,Spruce Grove,AB,T7X,CA,view,3/19/2025 12:00, Brunch
-U1033,2,Big Deal Burger,Pensacola,FL,32504,US,add_to_cart,3/20/2025 12:00, Coffee And Tea
-U1034,1,Petro-Canada,Vancouver,BC,V5T,CA,purchase,3/21/2025 12:00, Cafe
-U1035,1,Petro-Canada,Kitchener,ON,N2E,CA,purchase,3/22/2025 12:00, Sandwiches
-U1036,2,Vincent's Pizza,Shirley,NY,11976,US,purchase,3/23/2025 12:00, Breakfast & Brunch
-U1037,2,A Corner Cafe,Markham,ON,L3R 1N1,CA,purchase,3/24/2025 12:00, Canadian
-U1038,2,Petro-Canada,Edmonton,AB,T5M,CA,view,3/21/2025 12:00, Cool Treats
-U1039,2,Popeyes,Cincinnati,OH,45211,US,add_to_cart,3/22/2025 12:00, Fusion
-U1040,2,Dickey's Barbecue Pit,Perrysburg Township,OH,43551,US,purchase,3/23/2025 12:00, Empanadas
-U1041,2,Outback Steakhouse,Niles,OH,44446,US,purchase,3/24/2025 12:00, Mexican
-U1042,2,Petro-Canada,London,ON,N6E,CA,purchase,3/25/2025 12:00, Hamburgers
-U1043,2,Lemongrass Asian Fusion,Wausau,WI,54403,US,purchase,3/26/2025 12:00, Bar/Pub Food
-U1044,2,Sonic at 616 W. Pinhook / Oil Center,Lafayette,LA,70503,US,view,3/27/2025 12:00, Cake Shop
-U1045,2,Chicken Wing Co.,San Francisco,CA,94102,US,add_to_cart,3/28/2025 12:00, Breakfast &Amp
-U1045,2,Petro-Canada,Kitchener,ON,N2E,CA,purchase,3/29/2025 12:00, Middle Eastern
-U1045,2,Etoile Mirabel,Mirabel,QC,J7J,CA,purchase,3/30/2025 12:00, Chicken Tenders
-U1045,0,Montana's,Winnipeg,MB,R2M,CA,purchase,3/31/2025 12:00, Pizza
-U1046,2,Empanadas Monumental,The Bronx,NY,10472,US,purchase,4/1/2025 12:00, Asian Fusion
-U1047,0,Super Mega Dilla,Port St. Lucie,FL,34986,US,view,4/2/2025 12:00, Dîner
-U1048,1,A.Bento 饭匠,Vancouver,BC,V5Z 1G1,CA,add_to_cart,4/3/2025 12:00, Allergy Friendly
-U1049,0,McDonald's,Waterloo,IA,50703,US,purchase,4/4/2025 12:00, Salads
-U1050,0,NY Bakery and Desserts,New York,NY,10019,US,purchase,4/5/2025 12:00, Drinks
-U1051,0,Brooklyn Pizza,North Miami Beach,FL,33162,US,purchase,4/6/2025 12:00, Home &Amp
-U1052,0,Wild Burger,Manitowoc,WI,54220,US,purchase,4/7/2025 12:00, Canadien
-U1053,2,Falafel Me,Austin,TX,78701,US,view,4/8/2025 12:00, Latin American
-U1054,1,Chinese Bites,Irving,TX,75039,US,add_to_cart,4/9/2025 12:00, Sandwich
-U1055,2,Buddy V's Cake Slice,Tampa,FL,33635,US,purchase,4/10/2025 12:00, Breakfast Sandwiches
-U1056,1,European Bakery & Deli,Calgary,AB,T2S 0A9,CA,purchase,4/11/2025 12:00, Kids Friendly
-U1057,0,Petro-Canada,London,ON,N6E,CA,purchase,4/12/2025 12:00, Coffee & Tea
-U1058,2,Starbucks,Bradford,ON,L3Z 1X8,CA,purchase,4/13/2025 12:00, Group Friendly
-U1059,1,Taouk,Sainte-Thérèse,QC,J7E 2B4,CA,view,4/14/2025 12:00, Cheeseburger
-U1060,1,Atlas Cafe,New York,NY,10003,US,add_to_cart,4/15/2025 12:00, Crèmerie
-U1060,1,Nashville Kickn-Chicken,Villa Rica,GA,30180,US,purchase,4/16/2025 12:00, Vegan Friendly
-U1060,0,Petro-Canada,Montréal,QC,H4B,CA,purchase,4/17/2025 12:00, Halal
-U1060,2,Thrilled Cheese,Raleigh,NC,27604,US,purchase,4/14/2025 12:00, Noodles
-U1060,1,Starbucks,San Pablo,CA,94806,US,purchase,4/15/2025 12:00, Fall Food Moments
-U1060,1,Etoile Mirabel,Mirabel,QC,J7J,CA,view,4/16/2025 12:00, Combo
-U1060,2,Petro-Canada,Burlington,ON,L7L,CA,add_to_cart,4/17/2025 12:00, Bar Food
-U1060,1,Andy's Pizza Bethesda,Bethesda,MD,20814,US,purchase,4/18/2025 12:00, Bbq
-U1060,2,Petro-Canada,St. Albert,AB,T8N3P8,CA,purchase,4/19/2025 12:00, Empanada
-U1060,2,Kfc,Memphis,TN,38114,US,purchase,4/20/2025 12:00, Hot Drinks
-U1060,2,Marco's Pizza,Oshkosh,WI,54902,US,purchase,4/21/2025 12:00, Italian
-U1060,1,Church's Texas Chicken,Americus,GA,31709,US,view,4/22/2025 12:00, Salad
-U1060,2,More Taters Please,Windsor,ON,N8W,CA,add_to_cart,4/23/2025 12:00, Lunch
-U1061,1,Ricky's Country Restaurant,Coquitlam,BC,V3K,CA,purchase,4/24/2025 12:00, Everyday Essentials
-U1062,0,MrBeast Burger,Waxahachie,TX,75165,US,purchase,4/25/2025 12:00, Coffee
-U1063,2,New Mandarin Seafood Restaurant,Vancouver,BC,V5N 0G5,CA,purchase,4/26/2025 12:00, Barbecue
-U1064,2,Pdq Chicken,Brandenton,FL,34211,US,purchase,4/27/2025 12:00, Tacos
-U1065,1,Greasy Goods,Albuquerque,NM,87108,US,view,4/28/2025 12:00, Candy
-U1066,2,Bonfires Bar And Grill,Oviedo,FL,32765,US,add_to_cart,4/29/2025 12:00, Only Available Here
-U1067,2,A&W,Barrie,ON,L4N 9B1,CA,purchase,4/30/2025 12:00, Vegetarian
-U1068,0,Zorba's Greek Kitchen,Surrey,BC,V3W9G2,CA,purchase,5/1/2025 12:00, Coffee &Amp
-U1069,2,A&W,Barrie,ON,L4M,CA,purchase,5/2/2025 12:00, Subs & Sandwiches
-U1070,1,Chicken Sammy's,Avondale,AZ,85392,US,purchase,5/3/2025 12:00, Family Friendly
-U1071,1,Sharon's BBQ,Abilene,TX,79606,US,view,5/4/2025 12:00, Cantonese
-U1072,1,Cov Live,Covington,KY,41011,US,add_to_cart,5/5/2025 12:00, Wings
-U1073,2,McDonald's,Bessemer,AL,35022,US,purchase,5/6/2025 12:00, Fruits De Mer
-U1074,0,"Don Tequilas - Columbia, Sc",Columbia,SC,29212,US,purchase,5/7/2025 12:00, Seafood
-U1075,2,Ennio's Pasta House,Waterloo,ON,N2J 4G8,CA,purchase,5/8/2025 12:00, Food Trucks
-U1076,0,Little Caesars,Dayton,OH,45414,US,purchase,5/9/2025 12:00, Crème Glacée
-U1077,2,Jack's Famous Wings,Memphis,TN,38106,US,view,5/10/2025 12:00, Beau
-U1078,1,Morris Ramen,Madison,WI,53703,US,add_to_cart,5/8/2025 12:00, Mexican Food
-U1079,2,Etta's Greeklish Eatery,Windsor,ON,N8S 1M9,CA,purchase,5/9/2025 12:00, Dépanneur
-U1080,1,Petro-Canada,Montréal,QC,H4P,CA,purchase,5/10/2025 12:00, Personal Care
-U1081,2,D Jackson Bbq,Dallas,TX,75211,US,purchase,5/11/2025 12:00, Gyro
-U1082,2,7 West Cafe,Toronto,ON,M4Y 1R4,CA,purchase,5/12/2025 12:00, Chinois
-U1083,1,Zesty - Shawarma & Halal Grill,Oakville,ON,L6K 3E1,CA,view,5/12/2025 12:00, Fringales Nocturnes
-U1084,0,Little Caesars,Little Chute,WI,54140,US,add_to_cart,5/13/2025 12:00, Healthy
-U1085,2,Petro-Canada,Montréal,QC,H4B,CA,purchase,5/14/2025 12:00, Iced Drinks
+U1001,2,Burger King,Manitowoc,WI,54220,US,purchase,1/15/2025 10:30, Burgers
+U1002,2,Petro-Canada,Airdrie,AB,T4A,CA,view,1/15/2025 10:35, Coffee/Tea
+U1003,2,Boba Bae,Ashwaubenon,WI,54304,US,add_to_cart,1/15/2025 11:00, Bubble Tea
+U1004,2,1001 Nights Shawarma,Kitchener,ON,N2C,CA,purchase,1/15/2025 11:05, Local
+U1004,1,Chirpyhut Fried Chicken (JlgJ),Richmond,BC,V6X 2B8,CA,purchase,1/15/2025 12:00, American
+U1004,0,7 West Cafe,Toronto,ON,M4Y 1R4,CA,purchase,1/16/2025 12:00, Alcohol
+U1004,1,Petro-Canada,Edmonton,AB,T6X,CA,view,1/17/2025 12:00, Coffee/Tea
+U1004,0,El Valle Verde,Cincinnati,OH,45205,US,add_to_cart,1/18/2025 12:00, Kids Menu
+U1004,1,Rock Salad,Dubuque,IA,52001,US,purchase,1/19/2025 12:00, Dessert
+U1004,2,Etoile Mirabel,Mirabel,QC,J7J,CA,purchase,1/20/2025 12:00, Bon
+U1004,1,Petro-Canada,Burlington,ON,L7L,CA,purchase,1/21/2025 12:00, Convenience
+U1004,2,J. Alexander's : Jacksonville,Jacksonville,FL,32246,US,view,1/22/2025 12:00, Desserts
+U1005,0,Petro-Canada,Burlington,ON,L7L,CA,add_to_cart,1/23/2025 12:00, Café/Thé
+U1006,0,Petro-Canada,Montréal,QC,H3S,CA,purchase,1/24/2025 12:00, Grocery
+U1007,0,A&W,Red Deer,AB,T4R,CA,purchase,1/25/2025 12:00, Burgers
+U1008,2,A&W,Laval,QC,H7V 2W6,CA,purchase,1/26/2025 12:00, Burgers
+U1008,0,Petro-Canada,Regina,SK,S4N,CA,view,1/27/2025 12:00, Coffee/Tea
+U1008,2,Juanys Taqueria,San Antonio,TX,78211,US,add_to_cart,1/28/2025 12:00, New Mexican
+U1008,2,Casa Mexicana Restaurant Inc,Tampa,FL,33619,US,purchase,1/29/2025 12:00, Diner
+U1008,2,Mrbeast Burger,Austin,TX,78759,US,purchase,1/30/2025 12:00, Chicken Wings
+U1008,2,Viva Mexico 406,Palisades Park,NJ,7650,US,purchase,1/31/2025 12:00, Beef & Pork
+U1008,0,Little Caesars,Texarkana,TX,75503,US,view,2/1/2025 12:00, Fast Food
+U1008,2,Beef 'o' Brady's - Kingsport Tn,Kingsport,TN,37660,US,add_to_cart,2/2/2025 12:00, Burgers
+U1008,2,More Taters Please,Windsor,ON,N8W,CA,purchase,2/3/2025 12:00, Américain
+U1008,2,Franny's Family Restaurant & Pancake House,Stevens Point,WI,54482,US,purchase,2/4/2025 12:00, Breakfast
+U1009,2,Famous Greek Salads,Clearwater,FL,33761,US,purchase,2/5/2025 12:00, Mediterranean
+U1009,2,Viva Mexico 406,Palisades Park,NJ,7650,US,view,2/6/2025 12:00, Beef & Pork
+U1009,2,New York Pizza Factory,Fairfax,VA,22030,US,add_to_cart,2/7/2025 12:00, Dinner
+U1009,2,McDonald's,Meraux,LA,70075,US,purchase,2/8/2025 12:00, Burger
+U1009,1,Mcdonald's®,Hammond,IN,46323,US,purchase,2/9/2025 12:00, Fast Food
+U1009,1,Mr. Fish & Chicken,Detroit,MI,48205,US,purchase,2/10/2025 12:00, Fish And Chips
+U1009,0,7 West Cafe,Toronto,ON,M4Y 1R4,CA,view,2/11/2025 12:00, Alcohol
+U1010,0,Zubu Ramen Bar,Burnaby,BC,V5H 4J5,CA,add_to_cart,2/12/2025 12:00, Chicken
+U1011,0,Enjoy Cafe 1+1,Richmond,BC,V6X,CA,purchase,2/13/2025 12:00, Café/Thé
+U1012,1,European Bakery & Deli,Calgary,AB,T2S 0A9,CA,purchase,2/14/2025 12:00, Bakery
+U1013,0,Dirty Burger,New York,NY,10011,US,purchase,2/15/2025 12:00, Burgers
+U1014,0,902 Restaurant & Catering,Halifax,NS,B3J,CA,view,2/16/2025 12:00, Greek
+U1014,0,Petro-Canada,Montréal,QC,H4B,CA,add_to_cart,2/17/2025 12:00, Grocery
+U1015,0,Soup Kettle,Pittsburgh,PA,15217,US,purchase,2/18/2025 12:00, Deli
+U1016,0,A&w,Chilliwack,BC,V2R 3N4,CA,purchase,2/19/2025 12:00, Bistro
+U1016,0,El Pastaman,Montréal,QC,H2X,CA,purchase,2/20/2025 12:00, Dessert
+U1016,0,Vegetable Garden,Silver Spring,MD,20906,US,view,2/21/2025 12:00, Chinese
+U1016,0,Enjoy Cafe 1+1,Richmond,BC,V6X,CA,add_to_cart,2/22/2025 12:00, Café/Thé
+U1016,2,Petro-Canada,Coquitlam,BC,V3K,CA,purchase,2/23/2025 12:00, Coffee/Tea
+U1016,2,Erito Sushi,Victoria,BC,V8Z 0B9,CA,purchase,2/24/2025 12:00, Fait-Maison
+U1016,1,First Watch,Tampa,FL,33609,US,purchase,2/25/2025 12:00, Breakfast And Brunch
+U1016,2,Ruby Thai Kitchen,Happy Valley,OR,97086,US,purchase,2/26/2025 12:00, Asian
+U1016,0,Montana's,Orillia,ON,L3V 8A2,CA,view,2/27/2025 12:00, American
+U1016,2,Portland Fried Chicken Cult,Portland,OR,97209,US,add_to_cart,2/28/2025 12:00, Comfort Food
+U1016,2,Mak's Pasta & Salad,Nashville,TN,37219,US,purchase,3/1/2025 12:00, Comfort Food
+U1016,2,168 Sushi Buffet,London,ON,N6H 1T9,CA,purchase,3/2/2025 12:00, Asiatique
+U1016,2,Mercy's Bakery - Lansdale,Lansdale,PA,19446,US,purchase,3/3/2025 12:00, Breakfast And Brunch
+U1016,2,Stoby's Russellville - Russellville,Russellville,AR,72801,US,purchase,3/4/2025 12:00, American (Traditional)
+U1017,1,McDonald's,Woodruff,SC,29388,US,view,3/1/2025 12:00, Burger
+U1018,2,A&W,Red Deer,AB,T4R 1H1,CA,add_to_cart,3/2/2025 12:00, Burgers
+U1019,1,Dunkin',Trooper,PA,19403,US,purchase,3/3/2025 12:00,Butter
+U1020,2,280 Marathon,Opelika,AL,36804,US,purchase,3/4/2025 12:00,Bread
+U1021,2,McDonald's,Philadelphia,PA,19122,US,purchase,3/5/2025 12:00, Breakfast
+U1021,2,Rotunda Cafe,Madison,WI,53704,US,purchase,3/6/2025 12:00, Breakfast
+U1021,2,Leo's Pizza Italian Restaraunt,Washington,NJ,7882,US,view,3/7/2025 12:00, Grandma Pizza
+U1021,0,Ancora - Downtown,Madison,WI,53703,US,add_to_cart,3/8/2025 12:00, Breakfast
+U1022,2,Enjoy Cafe 1+1,Richmond,BC,V6X,CA,purchase,3/9/2025 12:00, Café/Thé
+U1023,1,Lou's Bar & Grill,Phoenix,AZ,85008,US,purchase,3/10/2025 12:00, Dinner
+U1024,2,Jason's Deli,Melbourne,FL,32904,US,purchase,3/11/2025 12:00, Family Meals
+U1025,2,3 Coins Open Kitchen,Richmond Hill,ON,L4C,CA,purchase,3/12/2025 12:00, Brunch
+U1026,2,Starbucks,Windsor,ON,N8T 1E6,CA,view,3/13/2025 12:00, Brunch
+U1027,2,Taco Bell,La Crosse,WI,54601,US,add_to_cart,3/14/2025 12:00, Breakfast And Brunch
+U1028,1,Atlas Cafe,New York,NY,10003,US,purchase,3/15/2025 12:00, Coffee And Tea
+U1029,2,Sonic,Denton,TX,76205,US,purchase,3/16/2025 12:00, Chicken
+U1030,1,Starbucks,St. Catharines,ON,L2N 4H2,CA,purchase,3/17/2025 12:00, Brunch
+U1031,1,MomO's Cafe,Newport News,VA,23606,US,purchase,3/18/2025 12:00, Cafe
+U1032,2,Petro-Canada,Spruce Grove,AB,T7X,CA,view,3/19/2025 12:00, Coffee/Tea
+U1033,2,Big Deal Burger,Pensacola,FL,32504,US,add_to_cart,3/20/2025 12:00, Sandwiches
+U1034,1,Petro-Canada,Vancouver,BC,V5T,CA,purchase,3/21/2025 12:00, Convenience
+U1035,1,Petro-Canada,Kitchener,ON,N2E,CA,purchase,3/22/2025 12:00, Coffee/Tea
+U1036,2,Vincent's Pizza,Shirley,NY,11976,US,purchase,3/23/2025 12:00, Dinner
+U1037,2,A Corner Cafe,Markham,ON,L3R 1N1,CA,purchase,3/24/2025 12:00, Breakfast & Brunch
+U1038,2,Petro-Canada,Edmonton,AB,T5M,CA,view,3/21/2025 12:00, Canadian
+U1039,2,Popeyes,Cincinnati,OH,45211,US,add_to_cart,3/22/2025 12:00, Chicken
+U1040,2,Dickey's Barbecue Pit,Perrysburg Township,OH,43551,US,purchase,3/23/2025 12:00, Chicken
+U1041,2,Outback Steakhouse,Niles,OH,44446,US,purchase,3/24/2025 12:00, Burgers
+U1042,2,Petro-Canada,London,ON,N6E,CA,purchase,3/25/2025 12:00, Cool Treats
+U1043,2,Lemongrass Asian Fusion,Wausau,WI,54403,US,purchase,3/26/2025 12:00, Fusion
+U1044,2,Sonic at 616 W. Pinhook / Oil Center,Lafayette,LA,70503,US,view,3/27/2025 12:00, Burger
+U1045,2,Chicken Wing Co.,San Francisco,CA,94102,US,add_to_cart,3/28/2025 12:00, Chicken
+U1045,2,Petro-Canada,Kitchener,ON,N2E,CA,purchase,3/29/2025 12:00, Coffee/Tea
+U1045,2,Etoile Mirabel,Mirabel,QC,J7J,CA,purchase,3/30/2025 12:00, Bon
+U1045,0,Montana's,Winnipeg,MB,R2M,CA,purchase,3/31/2025 12:00, American
+U1046,2,Empanadas Monumental,The Bronx,NY,10472,US,purchase,4/1/2025 12:00, Empanadas
+U1047,0,Super Mega Dilla,Port St. Lucie,FL,34986,US,view,4/2/2025 12:00, Mexican
+U1048,1,A.Bento 饭匠,Vancouver,BC,V5Z 1G1,CA,add_to_cart,4/3/2025 12:00, Asian
+U1049,0,McDonald's,Waterloo,IA,50703,US,purchase,4/4/2025 12:00, Burger
+U1050,0,NY Bakery and Desserts,New York,NY,10019,US,purchase,4/5/2025 12:00, Breakfast
+U1051,0,Brooklyn Pizza,North Miami Beach,FL,33162,US,purchase,4/6/2025 12:00, Hamburgers
+U1052,0,Wild Burger,Manitowoc,WI,54220,US,purchase,4/7/2025 12:00, Bar/Pub Food
+U1053,2,Falafel Me,Austin,TX,78701,US,view,4/8/2025 12:00, Greek
+U1054,1,Chinese Bites,Irving,TX,75039,US,add_to_cart,4/9/2025 12:00, Chinese
+U1055,2,Buddy V's Cake Slice,Tampa,FL,33635,US,purchase,4/10/2025 12:00, Cake Shop
+U1056,1,European Bakery & Deli,Calgary,AB,T2S 0A9,CA,purchase,4/11/2025 12:00, Bakery
+U1057,0,Petro-Canada,London,ON,N6E,CA,purchase,4/12/2025 12:00, Cool Treats
+U1058,2,Starbucks,Bradford,ON,L3Z 1X8,CA,purchase,4/13/2025 12:00, Breakfast &Amp
+U1059,1,Taouk,Sainte-Thérèse,QC,J7E 2B4,CA,view,4/14/2025 12:00, Middle Eastern
+U1060,1,Atlas Cafe,New York,NY,10003,US,add_to_cart,4/15/2025 12:00, Coffee And Tea
+U1060,1,Nashville Kickn-Chicken,Villa Rica,GA,30180,US,purchase,4/16/2025 12:00, Chicken Tenders
+U1060,0,Petro-Canada,Montréal,QC,H4B,CA,purchase,4/17/2025 12:00, Grocery
+U1060,2,Thrilled Cheese,Raleigh,NC,27604,US,purchase,4/14/2025 12:00, Dinner
+U1060,1,Starbucks,San Pablo,CA,94806,US,purchase,4/15/2025 12:00, Cafe
+U1060,1,Etoile Mirabel,Mirabel,QC,J7J,CA,view,4/16/2025 12:00, Bon
+U1060,2,Petro-Canada,Burlington,ON,L7L,CA,add_to_cart,4/17/2025 12:00, Café/Thé
+U1060,1,Andy's Pizza Bethesda,Bethesda,MD,20814,US,purchase,4/18/2025 12:00, Deli
+U1060,2,Petro-Canada,St. Albert,AB,T8N3P8,CA,purchase,4/19/2025 12:00, Convenience
+U1060,2,Kfc,Memphis,TN,38114,US,purchase,4/20/2025 12:00, Chicken
+U1060,2,Marco's Pizza,Oshkosh,WI,54902,US,purchase,4/21/2025 12:00, Pizza
+U1060,1,Church's Texas Chicken,Americus,GA,31709,US,view,4/22/2025 12:00, Chicken Tenders
+U1060,2,More Taters Please,Windsor,ON,N8W,CA,add_to_cart,4/23/2025 12:00, Américain
+U1061,1,Ricky's Country Restaurant,Coquitlam,BC,V3K,CA,purchase,4/24/2025 12:00, Breakfast &Amp
+U1062,0,MrBeast Burger,Waxahachie,TX,75165,US,purchase,4/25/2025 12:00,
+U1063,2,New Mandarin Seafood Restaurant,Vancouver,BC,V5N 0G5,CA,purchase,4/26/2025 12:00, Asian Fusion
+U1064,2,Pdq Chicken,Brandenton,FL,34211,US,purchase,4/27/2025 12:00, Desserts
+U1065,1,Greasy Goods,Albuquerque,NM,87108,US,view,4/28/2025 12:00, Burgers
+U1066,2,Bonfires Bar And Grill,Oviedo,FL,32765,US,add_to_cart,4/29/2025 12:00, Dinner
+U1067,2,A&W,Barrie,ON,L4N 9B1,CA,purchase,4/30/2025 12:00, Breakfast &Amp
+U1068,0,Zorba's Greek Kitchen,Surrey,BC,V3W9G2,CA,purchase,5/1/2025 12:00, Dîner
+U1069,2,A&W,Barrie,ON,L4M,CA,purchase,5/2/2025 12:00, Breakfast &Amp
+U1070,1,Chicken Sammy's,Avondale,AZ,85392,US,purchase,5/3/2025 12:00, Chicken
+U1071,1,Sharon's BBQ,Abilene,TX,79606,US,view,5/4/2025 12:00, Bbq
+U1072,1,Cov Live,Covington,KY,41011,US,add_to_cart,5/5/2025 12:00, Sandwiches
+U1073,2,McDonald's,Bessemer,AL,35022,US,purchase,5/6/2025 12:00, Burger
+U1074,0,"Don Tequilas - Columbia, Sc",Columbia,SC,29212,US,purchase,5/7/2025 12:00, Mexican
+U1075,2,Ennio's Pasta House,Waterloo,ON,N2J 4G8,CA,purchase,5/8/2025 12:00, Local
+U1076,0,Little Caesars,Dayton,OH,45414,US,purchase,5/9/2025 12:00, Pizza
+U1077,2,Jack's Famous Wings,Memphis,TN,38106,US,view,5/10/2025 12:00,
+U1078,1,Morris Ramen,Madison,WI,53703,US,add_to_cart,5/8/2025 12:00, Free Delivery
+U1079,2,Etta's Greeklish Eatery,Windsor,ON,N8S 1M9,CA,purchase,5/9/2025 12:00, Barbecue
+U1080,1,Petro-Canada,Montréal,QC,H4P,CA,purchase,5/10/2025 12:00, Grocery
+U1081,2,D Jackson Bbq,Dallas,TX,75211,US,purchase,5/11/2025 12:00, Caterers
+U1082,2,7 West Cafe,Toronto,ON,M4Y 1R4,CA,purchase,5/12/2025 12:00, Alcohol
+U1083,1,Zesty - Shawarma & Halal Grill,Oakville,ON,L6K 3E1,CA,view,5/12/2025 12:00, Canadian
+U1084,0,Little Caesars,Little Chute,WI,54140,US,add_to_cart,5/13/2025 12:00, Italian
+U1085,2,Petro-Canada,Montréal,QC,H4B,CA,purchase,5/14/2025 12:00, Grocery
+,,,,,,,,, Asian Fusion
+,,,,,,,,, Breakfast
+,,,,,,,,, Breakfast
+,,,,,,,,, Sandwiches
+,,,,,,,,, Convenience
+,,,,,,,,, Grocery
+,,,,,,,,, Comfort Food
+,,,,,,,,, Chicken Wings
+,,,,,,,,, Dinner
+,,,,,,,,, Burgers
+,,,,,,,,, Lunch
+,,,,,,,,, Bistro
+,,,,,,,,, Middle Eastern
+,,,,,,,,, Cafe
+,,,,,,,,, Asian Fusion
+,,,,,,,,, Bon
+,,,,,,,,, Bistro
+,,,,,,,,, Pizza
+,,,,,,,,, Southern
+,,,,,,,,, Coffee
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Hawaiian
+,,,,,,,,, Breakfast &Amp
+,,,,,,,,, Mexican
+,,,,,,,,, American
+,,,,,,,,, Café/Thé
+,,,,,,,,, Latin
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Desserts
+,,,,,,,,,Tea
+,,,,,,,,, Dessert
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Brunch
+,,,,,,,,, Fast Food
+,,,,,,,,, Chicken Wings
+,,,,,,,,, Burgers
+,,,,,,,,, Allergy Friendly
+,,,,,,,,, Breakfast &Amp
+,,,,,,,,, Beau
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, burger
+,,,,,,,,, Chicken
+,,,,,,,,, Desserts
+,,,,,,,,, Brunch
+,,,,,,,,, Fait-Maison
+,,,,,,,,, Café/Thé
+,,,,,,,,, Family Friendly
+,,,,,,,,, Alcohol
+,,,,,,,,, Bubble Tea
+,,,,,,,,, Canadian
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Local
+,,,,,,,,, New Mexican
+,,,,,,,,, Canadian
+,,,,,,,,, Sandwich
+,,,,,,,,, Lunch
+,,,,,,,,, Burgers
+,,,,,,,,, Burgers
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Desserts
+,,,,,,,,, Drinks
+,,,,,,,,, Fried Chicken
+,,,,,,,,, Salad
+,,,,,,,,, Asian Fusion
+,,,,,,,,, Cafe
+,,,,,,,,, Bakery
+,,,,,,,,, Healthy Pizza
+,,,,,,,,, Asian Fusion
+,,,,,,,,, Barbecue
+,,,,,,,,, Café/Thé
+,,,,,,,,, Pasta
+,,,,,,,,, American
+,,,,,,,,, Breakfast And Brunch
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Dinner
+,,,,,,,,, Burger
+,,,,,,,,, Noodles
+,,,,,,,,, Cafe
+,,,,,,,,, Breakfast And Brunch
+,,,,,,,,, Américain
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Comfort Food
+,,,,,,,,, Takeout
+,,,,,,,,, Healthy Food
+,,,,,,,,, American Food
+,,,,,,,,, Dinner
+,,,,,,,,, Fast Food
+,,,,,,,,, Cajun/Creole
+,,,,,,,,, Barbecue
+,,,,,,,,, Cafe
+,,,,,,,,, Fast Food
+,,,,,,,,, Sandwiches
+,,,,,,,,, Bbq
+,,,,,,,,, Cafe
+,,,,,,,,,
+,,,,,,,,, Breakfast And Brunch
+,,,,,,,,, Japanese
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Local
+,,,,,,,,, Colombian
+,,,,,,,,, Chicken
+,,,,,,,,, Convenience
+,,,,,,,,,
+,,,,,,,,, Healthy
+,,,,,,,,, Asian Fusion
+,,,,,,,,, Canadien
+,,,,,,,,, Breakfast &Amp
+,,,,,,,,, Burger
+,,,,,,,,, Desserts
+,,,,,,,,, Burgers
+,,,,,,,,,
+,,,,,,,,, Sandwiches
+,,,,,,,,, Cafe
+,,,,,,,,, Américain
+,,,,,,,,, Café/Thé
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Seafood
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Bagels
+,,,,,,,,, Convenience
+,,,,,,,,, Breakfast
+,,,,,,,,, Mexican
+,,,,,,,,, Seafood
+,,,,,,,,, Dessert
+,,,,,,,,, Cafe
+,,,,,,,,, Diner
+,,,,,,,,, American
+,,,,,,,,, Brunch
+,,,,,,,,, Fruits De Mer
+,,,,,,,,, Coffee/Tea
+,,,,,,,,, Breakfast
+,,,,,,,,, Fruits De Mer
+,,,,,,,,, Dinner
+,,,,,,,,, Family Meals
+,,,,,,,,, Burgers
+,,,,,,,,, Cafe
+,,,,,,,,, Bière
+,,,,,,,,, Dessert
+,,,,,,,,, Chicken
+,,,,,,,,, Bakery
+,,,,,,,,, Breakfast &Amp
+,,,,,,,,, Cafe
+,,,,,,,,, Canadian
+,,,,,,,,, Fast Food
+,,,,,,,,, Breakfast
+,,,,,,,,, Américain
+,,,,,,,,, Convenience
+,,,,,,,,, Dinner
+,,,,,,,,, Canadian
+,,,,,,,,, Beau
+,,,,,,,,, Dessert
+,,,,,,,,, Canadian
+,,,,,,,,, Curry
+,,,,,,,,, Chicken
+,,,,,,,,, Bière
+,,,,,,,,, Burgers
+,,,,,,,,, Buffets
+,,,,,,,,, Dessert
+,,,,,,,,, Comfort Food
+,,,,,,,,, Chicken
+,,,,,,,,, Burger
+,,,,,,,,, Dessert
+,,,,,,,,, Pasta
+,,,,,,,,, Asian Fusion
+,,,,,,,,, Américain
+,,,,,,,,, Alcohol
+,,,,,,,,, Chicken Tenders
+,,,,,,,,, Empanadas
+,,,,,,,,, Chicken
+,,,,,,,,, Asian Fusion
+,,,,,,,,, Chicken
+,,,,,,,,, Seafood

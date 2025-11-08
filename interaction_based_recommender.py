@@ -1,6 +1,5 @@
 """
 UKFoodSaver Interaction-Based Recommendation System
-Migrated from rating-based to interaction-based approach
 """
 
 import pandas as pd
@@ -11,116 +10,143 @@ from scipy.sparse import csr_matrix
 from collections import defaultdict
 import json
 
- 
 # INTERACTION WEIGHTS CONFIGURATION
  
-
 INTERACTION_WEIGHTS = {
-    'view': 1.0,           # User viewed the item
-    'add_to_cart': 3.0,    # Strong signal - user wants it
-    'purchase': 5.0         # Strongest signal - user bought it
+    'view': 1.0,
+    'add_to_cart': 3.0,
+    'purchase': 5.0
 }
 
-# For cold start - popularity calculation
-POPULARITY_DECAY_DAYS = 2  # Items lose popularity after 2 days (food expiration)
+POPULARITY_DECAY_DAYS = 2
 
-# DATA PREPROCESSING: Convert Interactions to Implicit Ratings
-
+# DATA LOADING WITH METADATA
+ 
 def load_interaction_data(csv_path=None, df=None):
     """
     Load interaction data and convert to implicit ratings.
-    
-    Expected columns: user_id, item_id, interaction_type, timestamp
-    If still using old format (user_id, item_id, rating), it will handle it.
+    NOW ALSO EXTRACTS ITEM METADATA (store_id, postal_code, location)
     """
     if df is None:
-        df = pd.read_csv("data/UKFS_testdata.csv")
+        df = pd.read_csv(csv_path or "data/UKFS_testdata.csv")
     
-    # Check if we're using new interaction format or old rating format
+    print(f"# Loaded raw data: {len(df)} rows")
+    print(f"   Columns: {list(df.columns)}")
+    
+    # Check format and convert
     if 'interaction_type' in df.columns:
-        # NEW FORMAT: Convert interactions to implicit ratings
         df['implicit_rating'] = df['interaction_type'].map(INTERACTION_WEIGHTS)
-        
-        # Handle missing interaction types
         df['implicit_rating'] = df['implicit_rating'].fillna(INTERACTION_WEIGHTS['view'])
-        
     elif 'rating' in df.columns:
-        # OLD FORMAT: Use ratings directly (backward compatibility)
         df['implicit_rating'] = df['rating']
-        
     else:
         raise ValueError("DataFrame must have either 'interaction_type' or 'rating' column")
     
-    # Aggregate multiple interactions per user-item pair
-    # A user might view, add to cart, AND purchase the same item
+    # Add timestamp if missing
+    if 'timestamp' not in df.columns:
+        df['timestamp'] = pd.Timestamp.now()
+    else:
+        df['timestamp'] = pd.to_datetime(df['timestamp'])
+    
+    # Aggregate interactions
     aggregated = df.groupby(['user_id', 'item_id']).agg({
-        'implicit_rating': 'sum',  # Sum all interaction weights
-        'timestamp': 'max' if 'timestamp' in df.columns else 'first'
+        'implicit_rating': 'sum',
+        'timestamp': 'max'
     }).reset_index()
     
-    # Cap ratings at reasonable maximum (e.g., view + cart + purchase = 9.0)
     aggregated['implicit_rating'] = aggregated['implicit_rating'].clip(upper=10.0)
     
-    print(f"Loaded {len(df)} interactions → {len(aggregated)} unique user-item pairs")
-    print(f"Rating distribution:\n{aggregated['implicit_rating'].describe()}")
+    print(f"✓ Processed {len(df)} interactions → {len(aggregated)} unique user-item pairs")
+    print(f"  Users: {aggregated['user_id'].nunique()}")
+    print(f"  Items: {aggregated['item_id'].nunique()}")
     
-    return aggregated
+    return aggregated, df  # Return both aggregated and raw data
 
 
-def create_interaction_matrix(interactions_df):
+def extract_item_metadata(raw_df):
     """
-    Create sparse user-item interaction matrix.
-    Useful for quick lookups and matrix operations.
+    Extract item metadata from raw dataframe.
+    Creates mapping of item_id -> {store_id, postal_code, city, state, country}
     """
-    user_ids = interactions_df['user_id'].unique()
-    item_ids = interactions_df['item_id'].unique()
+    # Get unique items with their metadata
+    metadata_cols = ['item_id', 'store_id', 'postal_code', 'city', 'state', 'country']
+    available_cols = [col for col in metadata_cols if col in raw_df.columns]
     
-    user_to_idx = {user: idx for idx, user in enumerate(user_ids)}
-    item_to_idx = {item: idx for idx, item in enumerate(item_ids)}
+    if len(available_cols) < 2:
+        print("⚠️  No metadata columns found in CSV")
+        return {}
     
-    rows = [user_to_idx[user] for user in interactions_df['user_id']]
-    cols = [item_to_idx[item] for item in interactions_df['item_id']]
-    data = interactions_df['implicit_rating'].values
+    # Get first occurrence of each item (assuming metadata doesn't change)
+    item_metadata_df = raw_df[available_cols].drop_duplicates(subset=['item_id'])
     
-    interaction_matrix = csr_matrix((data, (rows, cols)), 
-                                   shape=(len(user_ids), len(item_ids)))
+    metadata_dict = {}
+    for _, row in item_metadata_df.iterrows():
+        item_id = row['item_id']
+        metadata_dict[item_id] = {
+            'store_id': row.get('store_id', ''),
+            'postal_code': row.get('postal_code', ''),
+            'city': row.get('city', ''),
+            'state': row.get('state', ''),
+            'country': row.get('country', ''),
+            'created_at': datetime.now()  # Can be updated with real creation time
+        }
     
-    return interaction_matrix, user_to_idx, item_to_idx
+    print(f"✓ Extracted metadata for {len(metadata_dict)} items")
+    print(f"  Sample item: {list(metadata_dict.keys())[0]} -> {metadata_dict[list(metadata_dict.keys())[0]]}")
+    
+    return metadata_dict
 
-# POSTAL CODE & KEYWORD FILTERING
 
+ # ITEM METADATA CLASS (ENHANCED)
+ 
 class ItemMetadata:
-    """
-    Manages item metadata for filtering (postal code, keywords, freshness).
-    This would typically come from your backend database.
-    """
+    """Manages item metadata for filtering and recommendations."""
     
     def __init__(self):
-        self.items = {}  # item_id -> {postal_code, keywords, created_at, store_id}
+        self.items = {}
     
-    def add_item(self, item_id, postal_code, keywords, store_id, created_at=None):
+    def load_from_dict(self, metadata_dict):
+        """Load metadata from dictionary extracted from CSV."""
+        self.items = metadata_dict
+        print(f"✓ ItemMetadata loaded {len(self.items)} items")
+    
+    def add_item(self, item_id, store_id, postal_code, city='', state='', country='', keywords=None, created_at=None):
         """Add or update item metadata."""
         self.items[item_id] = {
-            'postal_code': postal_code,
-            'keywords': set(kw.lower() for kw in keywords) if keywords else set(),
             'store_id': store_id,
+            'postal_code': postal_code,
+            'city': city,
+            'state': state,
+            'country': country,
+            'keywords': set(kw.lower() for kw in (keywords or [])),
             'created_at': created_at or datetime.now()
         }
     
+    def get_item_info(self, item_id):
+        """Get all metadata for an item."""
+        return self.items.get(item_id, {})
+    
     def filter_by_postal_code(self, item_ids, postal_code):
         """Filter items by postal code."""
+        if not postal_code:
+            return item_ids
+        
+        postal_code_upper = postal_code.upper() if isinstance(postal_code, str) else ''
         return [
             item_id for item_id in item_ids 
-            if self.items.get(item_id, {}).get('postal_code') == postal_code
+            if str(self.items.get(item_id, {}).get('postal_code', '')).upper() == postal_code_upper
         ]
     
     def filter_by_keyword(self, item_ids, keyword):
         """Filter items by keyword match."""
-        keyword = keyword.lower()
+        if not keyword:
+            return item_ids
+        
+        keyword_lower = keyword.lower()
         return [
             item_id for item_id in item_ids
-            if keyword in self.items.get(item_id, {}).get('keywords', set()) or
-               keyword in item_id.lower()  # Also search in item_id itself
+            if (keyword_lower in str(item_id).lower() or any (keyword_lower in str(value).lower()
+                for value in self.items.get(item_id, {}).values()))
         ]
     
     def filter_by_freshness(self, item_ids, max_age_hours=24):
@@ -131,48 +157,31 @@ class ItemMetadata:
             if self.items.get(item_id, {}).get('created_at', datetime.now()) > cutoff
         ]
     
-    def get_different_stores(self, item_ids, exclude_store_id):
-        """Get items from different stores (for diversity)."""
-        return [
-            item_id for item_id in item_ids
-            if self.items.get(item_id, {}).get('store_id') != exclude_store_id
-        ]
+    def get_store_id(self, item_id):
+        """Get store ID for an item."""
+        return self.items.get(item_id, {}).get('store_id', '')
 
-# POPULARITY BASELINE (For Cold Start)
 
-def build_popularity_baseline(interactions_df, item_metadata=None, 
-                              recency_weight=0.3):
-    """
-    Build popularity baseline considering both interaction count and recency.
-    Perfect for "Available Food" section for new users.
-    """
-    # Count interactions per item
+ # POPULARITY BASELINE
+ 
+def build_popularity_baseline(interactions_df, item_metadata=None, recency_weight=0.3):
+    """Build popularity baseline with item metadata."""
     item_popularity = interactions_df.groupby('item_id').agg({
         'implicit_rating': ['sum', 'count', 'mean'],
-        'timestamp': 'max' if 'timestamp' in interactions_df.columns else 'first'
+        'timestamp': 'max'
     }).reset_index()
     
     item_popularity.columns = ['item_id', 'total_rating', 'interaction_count', 
                                'avg_rating', 'last_interaction']
     
-    # Normalize interaction count
     max_interactions = item_popularity['interaction_count'].max()
     item_popularity['norm_interactions'] = (
         item_popularity['interaction_count'] / max_interactions
         if max_interactions > 0 else 0
     )
     
-    # Add recency score (newer items get boost)
-    if 'last_interaction' in item_popularity.columns and item_metadata:
-        now = datetime.now()
-        item_popularity['recency_score'] = item_popularity['item_id'].apply(
-            lambda x: 1.0 if (now - item_metadata.items.get(x, {}).get(
-                'created_at', now)).days < POPULARITY_DECAY_DAYS else 0.5
-        )
-    else:
-        item_popularity['recency_score'] = 1.0
+    item_popularity['recency_score'] = 1.0
     
-    # Combined popularity score
     item_popularity['popularity_score'] = (
         (1 - recency_weight) * item_popularity['norm_interactions'] +
         recency_weight * item_popularity['recency_score']
@@ -181,50 +190,56 @@ def build_popularity_baseline(interactions_df, item_metadata=None,
     return item_popularity.sort_values('popularity_score', ascending=False)
 
 
+ # RECOMMENDATION FUNCTIONS
+ 
 def get_available_food_recommendations(popularity_df, item_metadata, 
                                       postal_code=None, keyword=None, 
                                       max_age_hours=24, n=20):
     """
-    Get "Available Food" recommendations for cold start users.
-    Applies postal code, keyword, and freshness filters.
+    Get "Available Food" recommendations with full metadata.
+    Returns: [(item_id, score, metadata), ...]
     """
-    # Start with all items from popularity baseline
     item_ids = popularity_df['item_id'].tolist()
     
     # Apply filters
     if item_metadata:
-        # Filter by freshness (food hasn't expired)
-        item_ids = item_metadata.filter_by_freshness(item_ids, max_age_hours)
-        
-        # Filter by postal code if provided
         if postal_code:
             item_ids = item_metadata.filter_by_postal_code(item_ids, postal_code)
-        
-        # Filter by keyword if provided
         if keyword:
             item_ids = item_metadata.filter_by_keyword(item_ids, keyword)
     
-    # Get top N items that passed all filters
+    # Get filtered items with scores
     filtered_popularity = popularity_df[popularity_df['item_id'].isin(item_ids)]
     
-    return filtered_popularity.head(n)[['item_id', 'popularity_score']].values.tolist()
+    # Add metadata to each recommendation
+    results = []
+    for _, row in filtered_popularity.head(n).iterrows():
+        item_id = row['item_id']
+        score = row['popularity_score']
+        metadata = item_metadata.get_item_info(item_id) if item_metadata else {}
+        
+        results.append({
+            'item_id': item_id,
+            'score': float(score),
+            'store_id': metadata.get('store_id', ''),
+            'postal_code': metadata.get('postal_code', ''),
+            'city': metadata.get('city', ''),
+            'state': metadata.get('state', ''),
+            'country': metadata.get('country', '')
+        })
+    
+    return results
 
-# COLLABORATIVE FILTERING (For "For You" Page)
 
 def train_interaction_model(interactions_df):
-    """
-    Train collaborative filtering model on interaction data.
-    Uses same SVD approach but with implicit ratings.
-    """
-    # Prepare data for Surprise library
-    reader = Reader(rating_scale=(0, 10))  # Adjusted for implicit ratings
+    """Train collaborative filtering model."""
+    reader = Reader(rating_scale=(0, 10))
     dataset = Dataset.load_from_df(
         interactions_df[['user_id', 'item_id', 'implicit_rating']], 
         reader
     )
     trainset = dataset.build_full_trainset()
     
-    # Train SVD model
     model = SVD(n_factors=20, random_state=42)
     model.fit(trainset)
     
@@ -239,119 +254,98 @@ def get_for_you_recommendations(user_id, trainset, model, interactions_df,
                                max_age_hours=24, n=10,
                                min_interactions=3):
     """
-    Get personalized "For You" recommendations.
-    
-    This combines:
-    1. Collaborative filtering for users with history
-    2. Popularity for cold start users
-    3. Postal code & keyword filtering
-    4. Freshness filtering (food expiration)
-    5. Store diversity (recommend from different stores)
+    Get personalized "For You" recommendations with full metadata.
     """
-    
-    # Check user interaction history
     try:
         user_inner_id = trainset.to_inner_uid(user_id)
         user_interaction_count = len(trainset.ur[user_inner_id])
     except ValueError:
-        # User not in training set - cold start
         user_interaction_count = 0
     
-    # COLD START: Use popularity baseline
+    # COLD START
     if user_interaction_count < min_interactions:
-        print(f"Cold start user {user_id} - using popularity baseline")
         return get_available_food_recommendations(
             popularity_df, item_metadata, postal_code, keyword, max_age_hours, n
         )
     
-    # WARM USER: Use collaborative filtering
+    # WARM USER
     all_items = trainset.all_items()
     user_inner_id = trainset.to_inner_uid(user_id)
     
-    # Get items user has already interacted with
     user_items = set([
         trainset.to_raw_iid(item_id) 
         for item_id, _ in trainset.ur[user_inner_id]
     ])
     
-    # Get user's previous purchases to determine preferred stores
-    user_history = interactions_df[interactions_df['user_id'] == user_id]
+    # Get user's preferred stores for diversity
     user_stores = set()
     if item_metadata:
         for item_id in user_items:
-            store_id = item_metadata.items.get(item_id, {}).get('store_id')
+            store_id = item_metadata.get_store_id(item_id)
             if store_id:
                 user_stores.add(store_id)
     
-    # Predict ratings for all unseen items
+    # Predict ratings
     predictions = []
     for item_id in all_items:
         raw_item_id = trainset.to_raw_iid(item_id)
-        
         if raw_item_id not in user_items:
             pred = model.predict(user_id, raw_item_id)
             predictions.append((raw_item_id, pred.est))
     
-    # Sort by predicted rating
     predictions.sort(key=lambda x: x[1], reverse=True)
     
-    # Extract just item IDs for filtering
+    # Apply filters
     candidate_items = [item_id for item_id, _ in predictions]
     
-    # Apply filters
     if item_metadata:
-        # Freshness filter
-        candidate_items = item_metadata.filter_by_freshness(
-            candidate_items, max_age_hours
-        )
-        
-        # Postal code filter
         if postal_code:
-            candidate_items = item_metadata.filter_by_postal_code(
-                candidate_items, postal_code
-            )
-        
-        # Keyword filter
+            candidate_items = item_metadata.filter_by_postal_code(candidate_items, postal_code)
         if keyword:
-            candidate_items = item_metadata.filter_by_keyword(
-                candidate_items, keyword
-            )
+            candidate_items = item_metadata.filter_by_keyword(candidate_items, keyword)
     
-    # Reconstruct predictions with filtered items
+    # Reconstruct with metadata
     filtered_predictions = [
         (item_id, score) for item_id, score in predictions 
         if item_id in candidate_items
     ]
     
-    # Add diversity: prioritize items from different stores
+    # Add store diversity
     if item_metadata and user_stores:
         diverse_recs = []
         same_store_recs = []
         
         for item_id, score in filtered_predictions:
-            store_id = item_metadata.items.get(item_id, {}).get('store_id')
+            store_id = item_metadata.get_store_id(item_id)
             if store_id and store_id not in user_stores:
                 diverse_recs.append((item_id, score))
             else:
                 same_store_recs.append((item_id, score))
         
-        # Mix: 70% from different stores, 30% from same stores
         diverse_count = int(n * 0.7)
-        final_recs = diverse_recs[:diverse_count] + same_store_recs[:n - diverse_count]
-        
-        return final_recs[:n]
+        final_predictions = diverse_recs[:diverse_count] + same_store_recs[:n - diverse_count]
+    else:
+        final_predictions = filtered_predictions
     
-    return filtered_predictions[:n]
+    # Format with metadata
+    results = []
+    for item_id, score in final_predictions[:n]:
+        metadata = item_metadata.get_item_info(item_id) if item_metadata else {}
+        results.append({
+            'item_id': item_id,
+            'score': float(score),
+            'store_id': metadata.get('store_id', ''),
+            'postal_code': metadata.get('postal_code', ''),
+            'city': metadata.get('city', ''),
+            'state': metadata.get('state', ''),
+            'country': metadata.get('country', '')
+        })
+    
+    return results
 
-# COMPLEMENTARY ITEMS (Butter → Bread logic)
 
-def find_complementary_items(item_id, interactions_df, item_metadata, 
-                            trainset, n=5):
-    """
-    Find items frequently purchased together (complementary items).
-    E.g., if user bought butter, recommend bread.
-    """
-    # Find users who interacted with this item
+def find_complementary_items(item_id, interactions_df, item_metadata, trainset, n=5):
+    """Find complementary items with metadata."""
     users_with_item = interactions_df[
         interactions_df['item_id'] == item_id
     ]['user_id'].unique()
@@ -359,41 +353,40 @@ def find_complementary_items(item_id, interactions_df, item_metadata,
     if len(users_with_item) == 0:
         return []
     
-    # Find what else these users interacted with
     co_occurrences = interactions_df[
-        interactions_df['user_id'].isin(users_with_item) &
+        (interactions_df['user_id'].isin(users_with_item)) &
         (interactions_df['item_id'] != item_id)
     ]
     
-    # Count co-occurrences
     complementary = co_occurrences.groupby('item_id').size().reset_index(
         name='co_occurrence_count'
     )
-    complementary = complementary.sort_values(
-        'co_occurrence_count', ascending=False
-    )
+    complementary = complementary.sort_values('co_occurrence_count', ascending=False)
     
-    # Filter for freshness
-    if item_metadata:
-        fresh_items = item_metadata.filter_by_freshness(
-            complementary['item_id'].tolist()
-        )
-        complementary = complementary[
-            complementary['item_id'].isin(fresh_items)
-        ]
+    # Add metadata
+    results = []
+    for _, row in complementary.head(n).iterrows():
+        comp_item_id = row['item_id']
+        count = row['co_occurrence_count']
+        metadata = item_metadata.get_item_info(comp_item_id) if item_metadata else {}
+        
+        results.append({
+            'item_id': comp_item_id,
+            'co_occurrence_count': int(count),
+            'store_id': metadata.get('store_id', ''),
+            'postal_code': metadata.get('postal_code', ''),
+            'city': metadata.get('city', ''),
+            'state': metadata.get('state', ''),
+            'country': metadata.get('country', '')
+        })
     
-    return complementary.head(n)[['item_id', 'co_occurrence_count']].values.tolist()
+    return results
 
 
+# Recommender Class
  
-# FASTAPI INTEGRATION
- 
-
 class UKFoodSaverRecommender:
-    """
-    Production-ready recommender system.
-    Wraps all functionality for easy API integration.
-    """
+    """Production-ready recommender with full metadata support."""
     
     def __init__(self):
         self.model = None
@@ -403,27 +396,29 @@ class UKFoodSaverRecommender:
         self.item_metadata = ItemMetadata()
         self.last_train_time = None
     
-    def train(self, interactions_df):
-        """Train the model on interaction data."""
+    def train(self, interactions_df, raw_df=None):
+        """
+        Train the model on interaction data.
+        If raw_df provided, also extract and load item metadata.
+        """
         self.interactions_df = interactions_df
-        self.model, self.trainset = train_interaction_model(interactions_df)
-        self.popularity_df = build_popularity_baseline(
-            interactions_df, self.item_metadata
-        )
-        self.last_train_time = datetime.now()
-        print(f"✓ Model trained at {self.last_train_time}")
-    
-    def get_recommendations(self, user_id=None, postal_code=None, 
-                          keyword=None, n=10):
-        """
-        Main recommendation endpoint.
         
-        Returns:
-        - "Available Food" for new users (no user_id or cold start)
-        - "For You" personalized recs for users with history
-        """
+        # Extract and load metadata if raw_df provided
+        if raw_df is not None:
+            metadata_dict = extract_item_metadata(raw_df)
+            self.item_metadata.load_from_dict(metadata_dict)
+        
+        # Train model
+        self.model, self.trainset = train_interaction_model(interactions_df)
+        self.popularity_df = build_popularity_baseline(interactions_df, self.item_metadata)
+        self.last_train_time = datetime.now()
+        
+        print(f"✓ Training completed at {self.last_train_time}")
+        print(f"  {len(self.item_metadata.items)} items with metadata")
+    
+    def get_recommendations(self, user_id=None, postal_code=None, keyword=None, n=10):
+        """Main recommendation endpoint with metadata."""
         if user_id is None:
-            # No user ID - show popular items
             return {
                 'type': 'available_food',
                 'recommendations': get_available_food_recommendations(
@@ -432,7 +427,6 @@ class UKFoodSaverRecommender:
                 )
             }
         
-        # Get personalized recommendations
         recs = get_for_you_recommendations(
             user_id, self.trainset, self.model,
             self.interactions_df, self.item_metadata,
@@ -446,17 +440,14 @@ class UKFoodSaverRecommender:
         }
     
     def get_complementary_items(self, item_id, n=5):
-        """Get items frequently bought together with given item."""
+        """Get complementary items with metadata."""
         return find_complementary_items(
             item_id, self.interactions_df, self.item_metadata,
             self.trainset, n
         )
     
     def log_interaction(self, user_id, item_id, interaction_type, timestamp=None):
-        """
-        Log a new interaction (for real-time updates).
-        In production, this would append to database.
-        """
+        """Log a new interaction."""
         new_interaction = pd.DataFrame([{
             'user_id': user_id,
             'item_id': item_id,
@@ -466,45 +457,49 @@ class UKFoodSaverRecommender:
         }])
         
         self.interactions_df = pd.concat(
-            [self.interactions_df, new_interaction], 
+            [self.interactions_df, new_interaction],
             ignore_index=True
         )
         
-        # Retrain periodically (e.g., every 100 interactions or daily)
-        if len(self.interactions_df) % 100 == 0:
-            print("Retraining model with new interactions...")
-            self.train(self.interactions_df)
+        print(f"✓ Logged: {user_id} → {item_id} ({interaction_type})")
 
-
-# EXAMPLE USAGE 
 
 if __name__ == "__main__":
     print("UKFoodSaver Interaction-Based Recommender System")
     print("=" * 70)
     
-    # Example: Load data (adapt to your CSV format)
-    # If you have old rating-based data, it will still work
-    example_data = pd.DataFrame([
-        {'user_id': 'user1', 'item_id': 'butter_store1', 'interaction_type': 'purchase', 'timestamp': datetime.now()},
-        {'user_id': 'user1', 'item_id': 'bread_store2', 'interaction_type': 'purchase', 'timestamp': datetime.now()},
-        {'user_id': 'user2', 'item_id': 'butter_store1', 'interaction_type': 'add_to_cart', 'timestamp': datetime.now()},
-    ])
-    
-    # Initialize recommender
-    recommender = UKFoodSaverRecommender()
-    
-    # Add item metadata (would come from your database)
-    recommender.item_metadata.add_item(
-        'butter_store1', 'AB1 2CD', ['butter', 'dairy'], 'store1'
-    )
-    recommender.item_metadata.add_item(
-        'bread_store2', 'AB1 2CD', ['bread', 'bakery'], 'store2'
-    )
-    
-    # Convert interactions and train
-    interactions = load_interaction_data(df=example_data)
-    recommender.train(interactions)
-    
-    # Get recommendations
-    recs = recommender.get_recommendations(user_id='user1', postal_code='AB1 2CD')
-    print("\nRecommendations:", recs)
+    # Test with real data
+    import os
+    if os.path.exists('data/UKFS_testdata.csv'):
+        print("\n1. Loading data...")
+        interactions, raw_df = load_interaction_data('data/UKFS_testdata.csv')
+        
+        print("\n2. Initializing recommender...")
+        recommender = UKFoodSaverRecommender()
+        
+        print("\n3. Training model...")
+        recommender.train(interactions, raw_df)
+        
+        print("\n4. Testing recommendations...")
+        
+        # Test available food
+        print("\n--- Available Food (with metadata) ---")
+        cold_recs = recommender.get_recommendations(n=3)
+        for i, rec in enumerate(cold_recs['recommendations'][:3], 1):
+            print(f"{i}. {rec['item_id']}")
+            print(f"   Store: {rec['store_id']}")
+            print(f"   Location: {rec['city']}, {rec['state']} {rec['postal_code']}")
+            print(f"   Score: {rec['score']:.3f}\n")
+        
+        # Test personalized
+        test_user = interactions['user_id'].iloc[0]
+        print(f"\n--- For You ({test_user}) ---")
+        personal_recs = recommender.get_recommendations(test_user, n=3)
+        for i, rec in enumerate(personal_recs['recommendations'][:3], 1):
+            print(f"{i}. {rec['item_id']}")
+            print(f"   Store: {rec['store_id']}")
+            print(f"   Location: {rec['city']}, {rec['state']} {rec['postal_code']}")
+            print(f"   Score: {rec['score']:.3f}\n")
+        
+        print("=" * 70)
+        print("✓ System ready with full metadata integration!")
