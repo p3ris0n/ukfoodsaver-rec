@@ -467,29 +467,87 @@ class UKFoodSaverRecommender:
         }
     
     def get_complementary_items(self, item_id, n=5):
-        """Get complementary items with metadata."""
-        return find_complementary_items(
-            item_id, self.interactions_df, self.item_metadata,
-            self.trainset, n
-        )
-    
-    def log_interaction(self, user_id, item_id, interaction_type, timestamp=None):
-        """Log a new interaction."""
-        new_interaction = pd.DataFrame([{
-            'user_id': user_id,
-            'item_id': item_id,
-            'interaction_type': interaction_type,
-            'timestamp': timestamp or datetime.now(),
-            'implicit_rating': INTERACTION_WEIGHTS.get(interaction_type, 1.0)
-        }])
-        
-        self.interactions_df = pd.concat(
-            [self.interactions_df, new_interaction],
-            ignore_index=True
-        )
-        
-        print(f"✓ Logged: {user_id} → {item_id} ({interaction_type})")
+        """Find complementary food items based on interactions and basic food pairing rules."""
+        if self.interactions_df is None:
+            return []
 
+        try:
+            # 1. First try to find items from interaction patterns
+            complementary = []
+            
+            # Get all users who interacted with this item
+            user_interactions = self.interactions_df[
+                self.interactions_df['item_id'].str.contains(item_id, case=False)
+            ]['user_id'].unique()
+
+            if len(user_interactions) > 0:
+                # Find what else these users interacted with
+                other_items = self.interactions_df[
+                    (self.interactions_df['user_id'].isin(user_interactions)) & 
+                    (~self.interactions_df['item_id'].str.contains(item_id, case=False))
+                ]
+
+                # Group and sort by frequency
+                item_counts = other_items.groupby('item_id').agg({
+                    'implicit_rating': 'sum'
+                }).reset_index()
+                
+                item_counts = item_counts.sort_values('implicit_rating', ascending=False)
+
+                # Add metadata and format results
+                for _, row in item_counts.head(n).iterrows():
+                    comp_item_id = row['item_id']
+                    metadata = self.item_metadata.get_item_info(comp_item_id)
+                    
+                    complementary.append({
+                        'item_id': comp_item_id,
+                        'score': float(row['implicit_rating']),
+                        'store_id': metadata.get('store_id', ''),
+                        'postal_code': metadata.get('postal_code', ''),
+                        'city': metadata.get('city', ''),
+                        'state': metadata.get('state', ''),
+                        'keywords': list(metadata.get('keywords', set()))
+                    })
+
+            # 2. If no interactions found, use basic food pairing rules
+            if not complementary:
+                # Define basic food pairings
+                food_pairings = {
+                    'burger': ['fries', 'soda', 'milkshake', 'coffee'],
+                    'coffee': ['tea', 'pastry', 'sandwich', 'cake'],
+                    'sandwich': ['chips', 'soda', 'coffee', 'soup'],
+                    'pizza': ['wings', 'soda', 'salad', 'breadsticks'],
+                    'bread': ['butter', 'jam', 'coffee', 'tea'],
+                    'tea': ['cookies', 'sandwich', 'cake', 'pastry']
+                }
+
+                # Get complementary items based on basic pairings
+                item_lower = item_id.lower()
+                paired_items = []
+                
+                # Look for matches in food pairings
+                for food, pairings in food_pairings.items():
+                    if food in item_lower:
+                        paired_items.extend(pairings)
+                        break
+
+                # Create recommendations from pairings
+                for paired_item in paired_items[:n]:
+                    complementary.append({
+                        'item_id': paired_item.title(),
+                        'score': 1.0,
+                        'store_id': '',
+                        'postal_code': '',
+                        'city': '',
+                        'state': '',
+                        'keywords': [paired_item]
+                    })
+
+            return complementary
+
+        except Exception as e:
+            print(f"Error finding complementary items: {e}")
+            return []
 
 if __name__ == "__main__":
     print("UKFoodSaver Interaction-Based Recommender System")
