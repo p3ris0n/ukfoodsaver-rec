@@ -548,6 +548,31 @@ class UKFoodSaverRecommender:
         except Exception as e:
             print(f"Error finding complementary items: {e}")
             return []
+        
+    def log_interaction(self, user_id: str, item_id: str, interaction_type: str, timestamp=None):
+        """Log a new user interaction."""
+        if self.interactions_df is None:
+            self.interactions_df = pd.DataFrame(columns=['user_id', 'item_id', 'interaction_type', 'implicit_rating', 'timestamp'])
+        
+        # Calculate implicit rating based on interaction type
+        implicit_rating = INTERACTION_WEIGHTS.get(interaction_type, 1.0)
+        
+        # Create new interaction record
+        new_interaction = pd.DataFrame([{
+            'user_id': user_id,
+            'item_id': item_id,
+            'interaction_type': interaction_type,
+            'implicit_rating': implicit_rating,
+            'timestamp': timestamp or datetime.now()
+        }])
+        
+        # Append to existing interactions
+        self.interactions_df = pd.concat([self.interactions_df, new_interaction], ignore_index=True)
+        
+        # Update popularity baseline
+        self.popularity_df = build_popularity_baseline(self.interactions_df, self.item_metadata)
+        
+        return True
 
 if __name__ == "__main__":
     print("UKFoodSaver Interaction-Based Recommender System")

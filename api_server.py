@@ -467,7 +467,7 @@ async def get_user_history(
     try:
         user_history = recommender.interactions_df[
             recommender.interactions_df['user_id'] == user_id
-        ].sort_values('timestamp', ascending=False).head(limit)
+        ].copy() # create a copy to avoid modification to the original data.
         
         if len(user_history) == 0:
             return {
@@ -476,24 +476,42 @@ async def get_user_history(
                 "history": []
             }
         
-        history = [
-            {
-                "item_id": row['item_id'],
-                "interaction_type": row.get('interaction_type', 'unknown'),
-                "implicit_rating": float(row['implicit_rating']),
-                "timestamp": row['timestamp'].isoformat() if pd.notna(row.get('timestamp')) else None
+        # convert timestamp to datetime if it's not already.
+        if 'timestamp' in user_history.columns:
+            user_history['timestamp'] = pd.to_datetime(user_history['timestamp'])
+            user_history = user_history.sort_values('timestamp', ascending=False)
+
+        user_history = user_history.head(limit) # take only the req. number of records
+        
+        history = []
+        for _, row in user_history.iterrows():
+            record = {
+                "item_id" : str(row['item_id']),
+                "implicit_rating" : float(row['implicit_rating'])
             }
-            for _, row in user_history.iterrows()
-        ]
-        
+
+            if 'interaction_type' in row:
+                record['interaction_type'] = str(row['interaction_type'])
+
+            if 'timestamp' in row and pd.notna(row['timestamp']):
+                try:
+                    record['timestamp'] = row['timestamp'].isoformat()
+                except AttributeError:
+                    record["timestamp"] = str(row['timestamp'])
+            
+            history.append(record)
+
         return {
-            "user_id": user_id,
-            "interaction_count": len(user_history),
-            "history": history
+            'user_id' : user_id,
+            'interaction_count' : len(history),
+            'history': history
         }
-        
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {str(e)}")
+        import traceback
+        print(f"Error getting user history for {user_id}: {str(e)}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"failed to get user history: {str(e)}")
 
 @app.get("/stats", tags=["Analytics"])
 async def get_statistics():
